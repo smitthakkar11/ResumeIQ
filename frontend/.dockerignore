@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env
+*.md
+src/**/*.test.jsx
+src/**/*.test.js

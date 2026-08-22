@@ -74,3 +74,64 @@ class TestAccessTokens:
         token = create_access_token(42, expires_minutes=expires)
         time.sleep(0.05)
         assert decode_access_token(token) == 42
+
+
+class TestRateLimiting:
+    """Without this, bcrypt's cost is the only thing slowing a brute-force."""
+
+    def test_repeated_failed_logins_are_eventually_blocked(self, client) -> None:
+        body = {"email": "nobody@example.com", "password": "wrong"}
+        codes = [client.post("/api/auth/login", json=body).status_code for _ in range(12)]
+
+        assert 429 in codes, "login is brute-forceable"
+        assert codes.index(429) >= 10, "limiter fired too early for an honest typo"
+
+    def test_blocked_response_says_when_to_retry(self, client) -> None:
+        body = {"email": "nobody@example.com", "password": "wrong"}
+        response = None
+        for _ in range(12):
+            response = client.post("/api/auth/login", json=body)
+            if response.status_code == 429:
+                break
+
+        assert response.status_code == 429
+        assert int(response.headers["Retry-After"]) > 0
+
+    def test_signup_is_limited_more_tightly_than_login(self) -> None:
+        from app.core.rate_limit import login_rate_limit, signup_rate_limit
+
+        signup_per_hour = signup_rate_limit.limit / signup_rate_limit.window
+        login_per_hour = login_rate_limit.limit / login_rate_limit.window
+        assert signup_per_hour < login_per_hour
+
+
+class TestSecurityHeaders:
+    def test_responses_carry_defence_in_depth_headers(self, client) -> None:
+        headers = client.get("/api/health").headers
+        assert headers["X-Content-Type-Options"] == "nosniff"
+        assert headers["X-Frame-Options"] == "DENY"
+        assert headers["Referrer-Policy"] == "no-referrer"
+
+
+class TestSecretKeyValidation:
+    def test_a_short_secret_key_is_rejected_at_startup(self) -> None:
+        """A forgeable signing key must fail loudly, not silently work."""
+        import pydantic
+        import pytest as _pytest
+
+        from app.core.config import Settings
+
+        with _pytest.raises(pydantic.ValidationError, match="at least 32 characters"):
+            Settings(SECRET_KEY="tooshort", DATABASE_URL="mysql+pymysql://u:p@localhost/db")
+
+    def test_the_placeholder_secret_is_rejected(self) -> None:
+        import pydantic
+        import pytest as _pytest
+
+        from app.core.config import Settings
+
+        with _pytest.raises(pydantic.ValidationError, match="placeholder"):
+            Settings(
+                SECRET_KEY="replace_me_with_a_long_random_string",
+                DATABASE_URL="mysql+pymysql://u:p@localhost/db",
+            )

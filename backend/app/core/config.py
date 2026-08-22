@@ -8,6 +8,7 @@ malformed variable fails loudly at startup instead of silently at 3am.
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # backend/app/core/config.py -> parents[2] == backend/
@@ -72,6 +73,19 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def secret_key_must_be_strong(cls, value: str) -> str:
+        """Fail at startup rather than ship a forgeable signing key."""
+        if len(value) < 32:
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters. Generate one with: "
+                'python -c "import secrets; print(secrets.token_urlsafe(48))"'
+            )
+        if value.startswith("replace_me"):
+            raise ValueError("SECRET_KEY is still the placeholder from .env.example")
+        return value
 
     @property
     def is_development(self) -> bool:

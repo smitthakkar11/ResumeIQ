@@ -25,6 +25,7 @@ from sqlalchemy.exc import SQLAlchemyError  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
 from app.api.deps import get_db  # noqa: E402
+from app.core.rate_limit import login_rate_limit, signup_rate_limit  # noqa: E402
 from app.db.session import engine  # noqa: E402
 from app.main import create_app  # noqa: E402
 
@@ -42,6 +43,19 @@ requires_db = pytest.mark.skipif(
     not database_is_reachable(),
     reason="MySQL unreachable — run backend/scripts/init_db.sql and `alembic upgrade head`",
 )
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limits() -> None:
+    """Clear the auth rate limiters before every test.
+
+    They are real production behaviour and are tested explicitly in
+    test_security.py, but leaving their counters shared across tests would
+    couple unrelated tests together — the 6th test that signs up would fail
+    because of the 5 before it.
+    """
+    login_rate_limit._hits.clear()
+    signup_rate_limit._hits.clear()
 
 
 @pytest.fixture

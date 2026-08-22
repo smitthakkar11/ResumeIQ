@@ -1,0 +1,59 @@
+# Local/staging stack: MySQL + FastAPI + nginx-served frontend.
+#
+#   cp .env.docker.example .env.docker   # then edit the passwords
+#   docker compose --env-file .env.docker up --build
+#
+# App: http://localhost:5174   API: http://localhost:8001/docs
+
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-resume_analyzer}
+      MYSQL_USER: ${MYSQL_USER:-resumeiq}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # Not published to the host: only the api service needs to reach MySQL,
+    # and exposing 3306 would also collide with a local MySQL install.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-resumeiq}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-resume_analyzer}
+      SECRET_KEY: ${SECRET_KEY}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5174}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:5174/login}
+    ports:
+      - "8001:8001"
+    depends_on:
+      db:
+        condition: service_healthy   # wait for MySQL to accept connections
+    # Migrations run on start: the schema must exist before the first request.
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8001"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Baked in at build time — Vite inlines it into the bundle.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8001/api}
+    ports:
+      - "5174:80"
+    depends_on:
+      - api
+
+volumes:
+  mysql_data:

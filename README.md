@@ -4,7 +4,8 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phases 1-7 and 9 complete. Phase 8 (supervised model) deliberately not started — see Roadmap.
+> **Status:** Complete. Phases 1-7, 9 and 10 done. Phase 8 (supervised model) deliberately
+> not built — see [Why there is no ML classifier](#why-there-is-no-ml-classifier).
 
 ---
 
@@ -133,8 +134,17 @@ cd backend && .venv/bin/pytest -q
 ```
 
 ```bash
-cd frontend && npm run build && npm run lint
+cd frontend && npm test && npm run build && npm run lint
 ```
+
+**189 backend tests** and **22 frontend tests**. The backend suite runs against
+real MySQL rather than SQLite — a suite that exercises a different database
+than production is testing the wrong thing. Each test runs inside a transaction
+that is rolled back afterwards, so tests share one database and leave no rows
+behind.
+
+`pytest.ini` sets `filterwarnings = error`, so a new warning fails the build
+rather than scrolling past.
 
 ---
 
@@ -399,11 +409,83 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ✅ Done |
 | 6 | Results dashboard + charts | ✅ Done |
 | 7 | User history + resume versioning | ✅ Done |
-| 8 | *Optional* supervised classifier — only with a real dataset | ⬜ Not started |
+| 8 | *Optional* supervised classifier | ⛔ Deliberately not built — [why](#why-there-is-no-ml-classifier) |
 | 9 | *Optional* local sentence-transformer semantic similarity | ✅ Done |
-| 10 | Testing, security, Docker, deployment | ⬜ |
+| 10 | Testing, security, Docker, deployment | ✅ Done |
 
 ---
+
+## Running with Docker
+
+```bash
+cp .env.docker.example .env.docker    # then edit the passwords and SECRET_KEY
+```
+
+```bash
+docker compose --env-file .env.docker up --build
+```
+
+App on <http://localhost:5174>, API on <http://localhost:8001>.
+
+Three services: `db` (MySQL 8.4), `api` (FastAPI) and `web` (the built bundle
+served by nginx).
+
+Details worth knowing:
+
+- **MySQL's port is not published.** Only `api` needs to reach it, and
+  publishing 3306 would collide with a local MySQL install.
+- **`api` waits for the database healthcheck** before starting, then runs
+  `alembic upgrade head` — the schema must exist before the first request.
+- **`VITE_API_BASE_URL` is a build argument, not an environment variable.**
+  Vite inlines it into the bundle at build time; setting it at runtime does
+  nothing.
+- **The backend image runs as a non-root user**, and nginx serves the frontend
+  with `try_files ... /index.html` so that refreshing on `/dashboard` works
+  instead of returning nginx's 404.
+
+> **Not verified:** Docker is not installed on the machine this was developed
+> on, so these images have never been built. The compose file and Dockerfiles
+> are written and syntax-checked but untested — expect to fix something on the
+> first `docker compose up`.
+
+## Security
+
+| Measure | Where |
+|---|---|
+| bcrypt, cost 12, per-password salt | `core/security.py` |
+| JWT HS256, 60-minute expiry, algorithm whitelist | `core/security.py` |
+| `SECRET_KEY` rejected if <32 chars or still the placeholder | `core/config.py` |
+| Rate limiting: 10 logins / 5 min, 5 signups / hour, per IP | `core/rate_limit.py` |
+| Identical error for unknown email and wrong password | `services/auth/auth_service.py` |
+| Row-level ownership inside every query, 404 not 403 | all routes |
+| `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` | `main.py` |
+| `/docs` and `/openapi.json` disabled outside development | `main.py` |
+| Uploads: 5 MB, 20 pages, magic-byte check | `services/resume/pdf_extractor.py` |
+| CORS restricted to configured origins | `main.py` |
+| No raw SQL — every query built through SQLAlchemy | throughout |
+| App connects to MySQL as `resumeiq`, never `root` | `scripts/init_db.sql` |
+| `.env` gitignored; only placeholder `.env.example` committed | repo root |
+| Only `VITE_`-prefixed vars reach the browser — `GOOGLE_CLIENT_SECRET` never does | `frontend/.env.example` |
+
+**Known limitation:** the rate limiter keeps its counters in process memory, so
+several uvicorn workers each get their own allowance and a restart clears them.
+That is fine for a single instance; a multi-instance deployment needs a shared
+store such as Redis. The interface would not change.
+
+## Why there is no ML classifier
+
+Phase 8 of the original plan was a supervised model predicting Strong /
+Moderate / Weak match. It was deliberately not built.
+
+Supervised learning needs labels, and there is no honest source for them here.
+Labelling from this system's own score would train a model to predict its own
+input — a circular exercise producing impressive-looking metrics that mean
+nothing. Labelling with an LLM would contradict the project's premise and
+inherit that model's errors as "ground truth". Public resume datasets are
+labelled by **job category**, not by match quality against a specific posting.
+
+Fabricating a dataset or its metrics was not an option. The classical NLP
+pipeline here is a complete, working system on its own.
 
 ## Frontend notes
 
@@ -420,12 +502,3 @@ frontend and the Pydantic schemas agree.
 The practical consequence: renaming a field on the backend will not fail the
 build. It will render `undefined` in the browser instead. When you change an
 API response shape, grep the frontend for the old field name.
-
-## Security notes
-
-- `.env` files are gitignored; only `.env.example` (placeholders) is committed.
-- The app connects to MySQL as `resumeiq`, never as `root`.
-- Only `VITE_`-prefixed variables reach the browser bundle — that prefix is a
-  security boundary. Google's client **secret** must never live in `frontend/`.
-- Every protected endpoint will enforce row-level ownership, not just
-  authentication: user A must never read user B's analyses.

@@ -4,10 +4,11 @@ This layer does one job: translate between HTTP and the service layer. All
 security decisions live in app/services/auth/ and app/core/security.py.
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.deps import CurrentUser, DbSession
 from app.core.config import settings
+from app.core.rate_limit import login_rate_limit, signup_rate_limit
 from app.schemas.auth import (
     GoogleAuthRequest,
     LoginRequest,
@@ -44,7 +45,12 @@ def _token_response(service: AuthService, user) -> TokenResponse:
     )
 
 
-@router.post("/signup", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/signup",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(signup_rate_limit)],
+)
 def signup(payload: SignupRequest, db: DbSession) -> TokenResponse:
     """Register with email and password, then log straight in."""
     service = AuthService(db)
@@ -60,7 +66,7 @@ def signup(payload: SignupRequest, db: DbSession) -> TokenResponse:
     return _token_response(service, user)
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, dependencies=[Depends(login_rate_limit)])
 def login(payload: LoginRequest, db: DbSession) -> TokenResponse:
     service = AuthService(db)
     try:
@@ -76,7 +82,7 @@ def login(payload: LoginRequest, db: DbSession) -> TokenResponse:
     return _token_response(service, user)
 
 
-@router.post("/google", response_model=TokenResponse)
+@router.post("/google", response_model=TokenResponse, dependencies=[Depends(login_rate_limit)])
 def google_auth(payload: GoogleAuthRequest, db: DbSession) -> TokenResponse:
     """Exchange a Google authorization code for one of OUR access tokens.
 
