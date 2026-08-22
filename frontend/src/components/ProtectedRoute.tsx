@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Spinner } from '@/components/Spinner'
 import { useAuth } from '@/lib/auth'
 
 /**
@@ -16,11 +17,7 @@ export function ProtectedRoute() {
   // Without this, a page refresh would bounce a logged-in user to /login
   // during the split second before GET /auth/me returns.
   if (initialising) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="size-6 animate-spin rounded-full border-2 border-slate-300 border-t-brand-600" />
-      </div>
-    )
+    return <Spinner />
   }
 
   if (!user) {

@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 5 of 10 complete (Matching engine).
+> **Status:** Phase 6 of 10 complete (Results dashboard).
 
 ---
 
@@ -193,6 +193,31 @@ those words.
 *dropped* and the remaining weights are rescaled, rather than scored as 0.
 We did not measure it; reporting 0 would be misleading.
 
+### Resume structure
+
+Extracted PDF text has no structure, so sections are detected heuristically: a
+section is present if a **short, heading-like line** (≤60 chars) matches its
+vocabulary. Contact is the exception — it is found by content (email, phone,
+LinkedIn/GitHub URL), because nobody writes "CONTACT" above their own address.
+
+Results are always phrased **"not detected"**, never "missing". A two-column
+layout, a heading rendered as an image, or a creative heading ("Where I've
+Worked") will all defeat it, and telling someone their resume has no experience
+section when it plainly does would be worse than saying nothing.
+
+### Recommendations
+
+Rule-based, in
+[`recommendations.py`](backend/app/services/analysis/recommendations.py). Every
+message traces to a readable condition — missing skills, keyword match below
+50%, no digits anywhere in the text, the phrase "responsible for", an expected
+section not detected, resume length outside 200–1000 words.
+
+**No LLM**, for three reasons: the advice is deterministic (same resume, same
+advice), it is unit-testable, and it cannot hallucinate a skill the candidate
+does not have. The cost is a generic tone, which is an acceptable trade for a
+system whose selling point is that every output is traceable.
+
 #### Honest limitations
 
 - **No semantics.** "ML" and "machine learning" are different dimensions.
@@ -292,7 +317,7 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 3 | Resume upload + PDF text extraction | ✅ Done |
 | 4 | NLP: preprocessing, skill dictionary, extraction | ✅ Done |
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ✅ Done |
-| 6 | Results dashboard + charts | ⬜ |
+| 6 | Results dashboard + charts | ✅ Done |
 | 7 | User history + resume versioning | ⬜ |
 | 8 | *Optional* supervised classifier — only with a real dataset | ⬜ |
 | 9 | *Optional* local sentence-transformer semantic similarity | ⬜ |

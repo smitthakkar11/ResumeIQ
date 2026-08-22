@@ -166,6 +166,8 @@ export type AnalysisResponse = {
   missing_skills: ExtractedSkill[]
   extra_skills: ExtractedSkill[]
   keywords: { term: string; found: boolean }[]
+  sections: Record<string, boolean>
+  recommendations: { category: string; message: string }[]
 }
 
 export const analysisApi = {

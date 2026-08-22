@@ -1,13 +1,19 @@
+import { Suspense, lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { Layout } from '@/components/Layout'
+import { Spinner } from '@/components/Spinner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
-import { Analyze } from '@/pages/Analyze'
 import { Dashboard } from '@/pages/Dashboard'
 import { Landing } from '@/pages/Landing'
 import { Login } from '@/pages/Login'
 import { NotFound } from '@/pages/NotFound'
 import { ResumeUpload } from '@/pages/ResumeUpload'
 import { Signup } from '@/pages/Signup'
+
+// Lazy-loaded: this page pulls in Recharts, which is large and only needed
+// once a user actually runs an analysis.
+const Analyze = lazy(() => import('@/pages/Analyze').then((m) => ({ default: m.Analyze })))
+
 
 /**
  * Route table.
@@ -31,7 +37,14 @@ export const router = createBrowserRouter([
         children: [
           { path: 'dashboard', element: <Dashboard /> },
           { path: 'resume/upload', element: <ResumeUpload /> },
-          { path: 'analyze', element: <Analyze /> },
+          {
+            path: 'analyze',
+            element: (
+              <Suspense fallback={<Spinner />}>
+                <Analyze />
+              </Suspense>
+            ),
+          },
         ],
       },
       { path: '*', element: <NotFound /> },

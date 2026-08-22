@@ -3,7 +3,13 @@ from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.resume import Resume
-from app.schemas.analysis import AnalyseRequest, AnalysisResponse, KeywordItem, SkillItem
+from app.schemas.analysis import (
+    AnalyseRequest,
+    AnalysisResponse,
+    KeywordItem,
+    RecommendationItem,
+    SkillItem,
+)
 from app.services.matching.engine import analyse
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
@@ -40,4 +46,9 @@ def create_analysis(
         missing_skills=to_items(result.missing_skills),
         extra_skills=to_items(result.extra_skills),
         keywords=[KeywordItem(term=k.term, found=k.found) for k in result.keywords],
+        sections=result.sections,
+        recommendations=[
+            RecommendationItem(category=r.category, message=r.message)
+            for r in result.recommendations
+        ],
     )

@@ -1,4 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { ComponentBars } from '@/components/ComponentBars'
+import { Recommendations } from '@/components/Recommendations'
+import { ScoreGauge } from '@/components/ScoreGauge'
+import { SectionChecklist } from '@/components/SectionChecklist'
 import { SkillBadges } from '@/components/SkillBadges'
 import { Alert, Button, Field } from '@/components/ui'
 import {
@@ -10,20 +14,6 @@ import {
 } from '@/lib/api'
 
 const MIN_JD_LENGTH = 50
-
-function ScoreCard({ label, value, hint }: { label: string; value: number | null; hint?: string }) {
-  return (
-    <div className="surface p-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        {label}
-      </p>
-      <p className="mt-2 text-3xl font-bold tabular-nums">
-        {value === null ? <span className="text-xl text-slate-400">n/a</span> : `${value}%`}
-      </p>
-      {hint && <p className="mt-1 text-xs text-slate-500 dark:text-slate-500">{hint}</p>}
-    </div>
-  )
-}
 
 export function Analyze() {
   const [resumes, setResumes] = useState<ResumeSummary[]>([])
@@ -135,45 +125,43 @@ export function Analyze() {
       )}
 
       {result && (
-        <div className="space-y-8 border-t border-slate-200 pt-8 dark:border-slate-800">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <ScoreCard label="Overall match" value={result.overall_score} />
-            <ScoreCard
-              label="Text similarity"
-              value={result.text_similarity}
-              hint={`weight ${result.weights.text_similarity ?? 0}`}
-            />
-            <ScoreCard
-              label="Skill match"
-              value={result.skill_match}
-              hint={
-                result.skill_match === null
-                  ? 'no known skills in the job description'
-                  : `weight ${result.weights.skill_match ?? 0}`
-              }
-            />
-            <ScoreCard
-              label="Keyword match"
-              value={result.keyword_match}
-              hint={`weight ${result.weights.keyword_match ?? 0}`}
-            />
+        <div className="space-y-6 border-t border-slate-200 pt-8 dark:border-slate-800">
+          <h2 className="text-xl font-semibold tracking-tight">
+            {result.job_title || 'Results'}
+            <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
+              {result.resume_filename}
+            </span>
+          </h2>
+
+          {/* ---- score overview ---- */}
+          <div className="grid gap-4 lg:grid-cols-5">
+            <div className="surface p-5 lg:col-span-2">
+              <ScoreGauge score={result.overall_score} />
+            </div>
+            <div className="surface p-5 lg:col-span-3">
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Score breakdown
+              </h3>
+              <ComponentBars result={result} />
+            </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          {/* ---- skills ---- */}
+          <div className="grid gap-4 lg:grid-cols-2">
             <section className="surface p-5">
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 Matched skills ({result.matched_skills.length})
-              </h2>
+              </h3>
               <SkillBadges skills={result.matched_skills} />
             </section>
 
             <section className="surface p-5">
-              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
                 Missing skills ({result.missing_skills.length})
-              </h2>
+              </h3>
               {result.missing_skills.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Nothing missing — the resume covers every skill the job named.
+                  Nothing missing — the resume names every skill the job asked for.
                 </p>
               ) : (
                 <SkillBadges skills={result.missing_skills} />
@@ -181,24 +169,46 @@ export function Analyze() {
             </section>
           </div>
 
+          {/* ---- keywords + structure ---- */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="surface p-5">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Important keywords
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {result.keywords.map((k) => (
+                  <span
+                    key={k.term}
+                    className={`rounded-md px-2 py-1 font-mono text-xs ${
+                      k.found
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                        : 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'
+                    }`}
+                  >
+                    {k.found ? '✓' : '✗'} {k.term}
+                  </span>
+                ))}
+              </div>
+            </section>
+
+            <section className="surface p-5">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Resume structure
+              </h3>
+              <SectionChecklist sections={result.sections} />
+            </section>
+          </div>
+
+          {/* ---- recommendations ---- */}
           <section className="surface p-5">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Important keywords
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {result.keywords.map((k) => (
-                <span
-                  key={k.term}
-                  className={`rounded-md px-2 py-1 font-mono text-xs ${
-                    k.found
-                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
-                      : 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'
-                  }`}
-                >
-                  {k.found ? '✓' : '✗'} {k.term}
-                </span>
-              ))}
-            </div>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Recommendations
+            </h3>
+            <Recommendations items={result.recommendations} />
+            <p className="mt-5 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500">
+              Generated by deterministic rules, not a language model. The same
+              resume and posting always produce the same suggestions.
+            </p>
           </section>
         </div>
       )}

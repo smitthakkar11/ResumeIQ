@@ -11,6 +11,8 @@ Weights are configurable in .env.
 from dataclasses import dataclass, field
 
 from app.core.config import settings
+from app.services.analysis.recommendations import Recommendation, build_recommendations
+from app.services.analysis.sections import detect_sections
 from app.services.matching.similarity import resume_token_set, text_similarity, top_keywords
 from app.services.nlp.skill_extractor import Skill, extract_skills
 
@@ -32,6 +34,8 @@ class MatchResult:
     extra_skills: list[Skill] = field(default_factory=list)
     keywords: list[KeywordHit] = field(default_factory=list)
     weights: dict[str, float] = field(default_factory=dict)
+    sections: dict[str, bool] = field(default_factory=dict)
+    recommendations: list[Recommendation] = field(default_factory=list)
 
 
 def _pct(value: float) -> float:
@@ -82,6 +86,18 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
         else 0.0
     )
 
+    # --- 5. Structure and advice -------------------------------------------
+    sections = detect_sections(resume_text)
+    recommendations = build_recommendations(
+        resume_text=resume_text,
+        missing_skills=[s.name for s in sorted(missing)],
+        matched_skills=[s.name for s in sorted(matched)],
+        keywords=[(k.term, k.found) for k in keywords],
+        sections=sections,
+        text_similarity=_pct(similarity),
+        keyword_match=_pct(keyword_ratio),
+    )
+
     return MatchResult(
         overall_score=_pct(overall),
         text_similarity=_pct(similarity),
@@ -92,4 +108,6 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
         extra_skills=sorted(extra),
         keywords=keywords,
         weights={name: round(w / total_weight, 3) for name, (_, w) in components.items()},
+        sections=sections,
+        recommendations=recommendations,
     )

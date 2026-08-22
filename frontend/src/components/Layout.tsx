@@ -106,7 +106,7 @@ export function Layout() {
 
       <footer className="border-t border-slate-200 py-6 dark:border-slate-800">
         <p className="mx-auto max-w-6xl px-6 text-sm text-slate-500 dark:text-slate-500">
-          ResumeIQ — resume ↔ job description analysis. Phase 5: matching engine.
+          ResumeIQ — resume ↔ job description analysis. Phase 6: results dashboard.
         </p>
       </footer>
     </div>

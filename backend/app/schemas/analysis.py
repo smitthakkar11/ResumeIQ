@@ -17,6 +17,11 @@ class KeywordItem(BaseModel):
     found: bool
 
 
+class RecommendationItem(BaseModel):
+    category: str
+    message: str
+
+
 class AnalysisResponse(BaseModel):
     resume_id: int
     resume_filename: str
@@ -34,3 +39,5 @@ class AnalysisResponse(BaseModel):
     missing_skills: list[SkillItem]
     extra_skills: list[SkillItem]
     keywords: list[KeywordItem]
+    sections: dict[str, bool]
+    recommendations: list[RecommendationItem]
