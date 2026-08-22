@@ -3,7 +3,8 @@ from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.resume import Resume
-from app.schemas.resume import ResumeDetail, ResumeSummary
+from app.schemas.resume import ExtractedSkill, ResumeDetail, ResumeSkills, ResumeSummary
+from app.services.nlp.skill_extractor import extract_skills
 from app.services.resume.pdf_extractor import MAX_FILE_BYTES, PdfError, extract_text
 
 router = APIRouter(prefix="/resumes", tags=["resumes"])
@@ -61,6 +62,18 @@ def list_resumes(db: DbSession, user: CurrentUser) -> list[Resume]:
 @router.get("/{resume_id}", response_model=ResumeDetail)
 def get_resume(resume_id: int, db: DbSession, user: CurrentUser) -> Resume:
     return _get_owned(db, resume_id, user)
+
+
+@router.get("/{resume_id}/skills", response_model=ResumeSkills)
+def get_resume_skills(resume_id: int, db: DbSession, user: CurrentUser) -> ResumeSkills:
+    resume = _get_owned(db, resume_id, user)
+    found = extract_skills(resume.extracted_text)
+    return ResumeSkills(
+        resume_id=resume.id,
+        filename=resume.filename,
+        skills=[ExtractedSkill(name=s.name, category=s.category) for s in found],
+        total=len(found),
+    )
 
 
 @router.delete("/{resume_id}", status_code=status.HTTP_204_NO_CONTENT)

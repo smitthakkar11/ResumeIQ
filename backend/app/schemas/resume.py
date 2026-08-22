@@ -16,3 +16,15 @@ class ResumeSummary(BaseModel):
 
 class ResumeDetail(ResumeSummary):
     extracted_text: str
+
+
+class ExtractedSkill(BaseModel):
+    name: str
+    category: str
+
+
+class ResumeSkills(BaseModel):
+    resume_id: int
+    filename: str
+    skills: list[ExtractedSkill]
+    total: int

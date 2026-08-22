@@ -185,3 +185,39 @@ class TestResumeOwnership:
         )
         assert client.get("/api/resumes", headers=bob).json() == []
         assert len(client.get("/api/resumes", headers=alice).json()) == 1
+
+
+@requires_db
+class TestResumeSkillsEndpoint:
+    def test_returns_skills_found_in_the_resume(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        created = client.post(
+            "/api/resumes/upload",
+            headers=auth_headers,
+            files={"file": ("r.pdf", make_pdf(), "application/pdf")},
+        ).json()
+
+        body = client.get(f"/api/resumes/{created['id']}/skills", headers=auth_headers).json()
+        found = {s["name"] for s in body["skills"]}
+
+        assert {"Python", "C++", "React", "MySQL", "scikit-learn", "Node.js", ".NET"} <= found
+        assert body["total"] == len(body["skills"])
+
+    def test_another_user_gets_404(self, client: TestClient, auth_headers: dict) -> None:
+        created = client.post(
+            "/api/resumes/upload",
+            headers=auth_headers,
+            files={"file": ("r.pdf", make_pdf(), "application/pdf")},
+        ).json()
+
+        other = client.post(
+            "/api/auth/signup",
+            json={"name": "Other", "email": "other@example.com", "password": "a-good-password"},
+        ).json()["access_token"]
+
+        response = client.get(
+            f"/api/resumes/{created['id']}/skills",
+            headers={"Authorization": f"Bearer {other}"},
+        )
+        assert response.status_code == 404

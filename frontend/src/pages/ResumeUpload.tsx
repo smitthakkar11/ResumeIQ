@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { SkillBadges } from '@/components/SkillBadges'
 import { Alert, Button } from '@/components/ui'
-import { errorMessage, resumeApi, type ResumeDetail, type ResumeSummary } from '@/lib/api'
+import {
+  errorMessage,
+  resumeApi,
+  type ResumeDetail,
+  type ResumeSkills,
+  type ResumeSummary,
+} from '@/lib/api'
 
 const MAX_MB = 5
 
@@ -10,8 +17,25 @@ export function ResumeUpload() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [preview, setPreview] = useState<ResumeDetail | null>(null)
+  const [skills, setSkills] = useState<ResumeSkills | null>(null)
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Skills are fetched alongside whichever resume is being previewed.
+  useEffect(() => {
+    if (!preview) {
+      setSkills(null)
+      return
+    }
+    let cancelled = false
+    resumeApi
+      .skills(preview.id)
+      .then((s) => !cancelled && setSkills(s))
+      .catch(() => !cancelled && setSkills(null))
+    return () => {
+      cancelled = true
+    }
+  }, [preview])
 
   useEffect(() => {
     resumeApi
@@ -155,7 +179,7 @@ export function ResumeUpload() {
         <section>
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Extracted text · {preview.filename}
+              Analysis · {preview.filename}
             </h2>
             <button
               type="button"
@@ -165,6 +189,16 @@ export function ResumeUpload() {
               Close
             </button>
           </div>
+          {skills && (
+            <div className="surface mt-4 p-5">
+              <p className="mb-4 text-sm">
+                <span className="font-semibold">{skills.total}</span> skill
+                {skills.total === 1 ? '' : 's'} detected
+              </p>
+              <SkillBadges skills={skills.skills} />
+            </div>
+          )}
+
           <pre className="surface mt-4 max-h-96 overflow-auto p-5 text-xs leading-relaxed whitespace-pre-wrap">
             {preview.extracted_text}
           </pre>

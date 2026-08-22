@@ -130,6 +130,14 @@ export type ResumeSummary = {
 
 export type ResumeDetail = ResumeSummary & { extracted_text: string }
 
+export type ExtractedSkill = { name: string; category: string }
+export type ResumeSkills = {
+  resume_id: number
+  filename: string
+  skills: ExtractedSkill[]
+  total: number
+}
+
 export const resumeApi = {
   upload: (file: File) => {
     const form = new FormData()
@@ -141,6 +149,7 @@ export const resumeApi = {
   },
   list: () => api.get<ResumeSummary[]>('/resumes').then((r) => r.data),
   get: (id: number) => api.get<ResumeDetail>(`/resumes/${id}`).then((r) => r.data),
+  skills: (id: number) => api.get<ResumeSkills>(`/resumes/${id}/skills`).then((r) => r.data),
   remove: (id: number) => api.delete(`/resumes/${id}`).then(() => undefined),
 }
 

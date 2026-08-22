@@ -1,0 +1,560 @@
+{
+  "_comment": "Curated skill dictionary. 'name' is the canonical form shown to users; 'aliases' are extra spellings matched case-insensitively (the canonical name is always matched too). Add new skills here rather than in code. Avoid aliases that are common English words: 'go' would match 'going', 'R' and 'C' appear everywhere. For those, list only unambiguous aliases.",
+  "skills": [
+    {
+      "name": "Python",
+      "category": "Language",
+      "aliases": [
+        "python3"
+      ]
+    },
+    {
+      "name": "Java",
+      "category": "Language",
+      "aliases": [
+        "java se",
+        "core java"
+      ]
+    },
+    {
+      "name": "C++",
+      "category": "Language",
+      "aliases": [
+        "cpp",
+        "c plus plus"
+      ]
+    },
+    {
+      "name": "C",
+      "category": "Language",
+      "aliases": [
+        "c programming",
+        "c language"
+      ]
+    },
+    {
+      "name": "C#",
+      "category": "Language",
+      "aliases": [
+        "csharp",
+        "c sharp"
+      ]
+    },
+    {
+      "name": "JavaScript",
+      "category": "Language",
+      "aliases": [
+        "js",
+        "ecmascript"
+      ]
+    },
+    {
+      "name": "TypeScript",
+      "category": "Language",
+      "aliases": [
+        "ts"
+      ]
+    },
+    {
+      "name": "Go",
+      "category": "Language",
+      "aliases": [
+        "golang",
+        "go lang"
+      ],
+      "match_name": false
+    },
+    {
+      "name": "Rust",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "Ruby",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "PHP",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "Swift",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "Kotlin",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "Scala",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "R",
+      "category": "Language",
+      "aliases": [
+        "r programming",
+        "r language"
+      ]
+    },
+    {
+      "name": "MATLAB",
+      "category": "Language",
+      "aliases": []
+    },
+    {
+      "name": "Bash",
+      "category": "Language",
+      "aliases": [
+        "shell scripting",
+        "shell script"
+      ]
+    },
+    {
+      "name": "React",
+      "category": "Frontend",
+      "aliases": [
+        "reactjs",
+        "react.js",
+        "react js"
+      ]
+    },
+    {
+      "name": "Next.js",
+      "category": "Frontend",
+      "aliases": [
+        "nextjs",
+        "next js"
+      ]
+    },
+    {
+      "name": "Angular",
+      "category": "Frontend",
+      "aliases": [
+        "angularjs",
+        "angular.js"
+      ]
+    },
+    {
+      "name": "Vue.js",
+      "category": "Frontend",
+      "aliases": [
+        "vuejs",
+        "vue"
+      ]
+    },
+    {
+      "name": "Redux",
+      "category": "Frontend",
+      "aliases": []
+    },
+    {
+      "name": "HTML",
+      "category": "Frontend",
+      "aliases": [
+        "html5"
+      ]
+    },
+    {
+      "name": "CSS",
+      "category": "Frontend",
+      "aliases": [
+        "css3"
+      ]
+    },
+    {
+      "name": "Tailwind CSS",
+      "category": "Frontend",
+      "aliases": [
+        "tailwind",
+        "tailwindcss"
+      ]
+    },
+    {
+      "name": "Bootstrap",
+      "category": "Frontend",
+      "aliases": []
+    },
+    {
+      "name": "Vite",
+      "category": "Frontend",
+      "aliases": []
+    },
+    {
+      "name": "Node.js",
+      "category": "Backend",
+      "aliases": [
+        "nodejs",
+        "node js"
+      ]
+    },
+    {
+      "name": "Express.js",
+      "category": "Backend",
+      "aliases": [
+        "expressjs",
+        "express js"
+      ]
+    },
+    {
+      "name": "FastAPI",
+      "category": "Backend",
+      "aliases": [
+        "fast api"
+      ]
+    },
+    {
+      "name": "Django",
+      "category": "Backend",
+      "aliases": []
+    },
+    {
+      "name": "Flask",
+      "category": "Backend",
+      "aliases": []
+    },
+    {
+      "name": "Spring Boot",
+      "category": "Backend",
+      "aliases": [
+        "springboot"
+      ]
+    },
+    {
+      "name": ".NET",
+      "category": "Backend",
+      "aliases": [
+        "dotnet",
+        "dot net",
+        "asp.net",
+        "aspnet"
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "category": "Backend",
+      "aliases": []
+    },
+    {
+      "name": "REST API",
+      "category": "Backend",
+      "aliases": [
+        "rest apis",
+        "restful"
+      ]
+    },
+    {
+      "name": "Microservices",
+      "category": "Backend",
+      "aliases": [
+        "microservice"
+      ]
+    },
+    {
+      "name": "SQL",
+      "category": "Database",
+      "aliases": []
+    },
+    {
+      "name": "MySQL",
+      "category": "Database",
+      "aliases": [
+        "my sql"
+      ]
+    },
+    {
+      "name": "PostgreSQL",
+      "category": "Database",
+      "aliases": [
+        "postgres",
+        "psql"
+      ]
+    },
+    {
+      "name": "MongoDB",
+      "category": "Database",
+      "aliases": [
+        "mongo"
+      ]
+    },
+    {
+      "name": "Redis",
+      "category": "Database",
+      "aliases": []
+    },
+    {
+      "name": "SQLite",
+      "category": "Database",
+      "aliases": []
+    },
+    {
+      "name": "Oracle",
+      "category": "Database",
+      "aliases": [
+        "oracle db"
+      ]
+    },
+    {
+      "name": "Elasticsearch",
+      "category": "Database",
+      "aliases": [
+        "elastic search"
+      ]
+    },
+    {
+      "name": "DynamoDB",
+      "category": "Database",
+      "aliases": [
+        "dynamo db"
+      ]
+    },
+    {
+      "name": "AWS",
+      "category": "Cloud",
+      "aliases": [
+        "amazon web services"
+      ]
+    },
+    {
+      "name": "Azure",
+      "category": "Cloud",
+      "aliases": [
+        "microsoft azure"
+      ]
+    },
+    {
+      "name": "Google Cloud",
+      "category": "Cloud",
+      "aliases": [
+        "gcp",
+        "google cloud platform"
+      ]
+    },
+    {
+      "name": "Docker",
+      "category": "DevOps",
+      "aliases": [
+        "dockerize",
+        "containerization"
+      ]
+    },
+    {
+      "name": "Kubernetes",
+      "category": "DevOps",
+      "aliases": [
+        "k8s"
+      ]
+    },
+    {
+      "name": "CI/CD",
+      "category": "DevOps",
+      "aliases": [
+        "ci cd",
+        "continuous integration",
+        "continuous deployment"
+      ]
+    },
+    {
+      "name": "Jenkins",
+      "category": "DevOps",
+      "aliases": []
+    },
+    {
+      "name": "Terraform",
+      "category": "DevOps",
+      "aliases": []
+    },
+    {
+      "name": "Nginx",
+      "category": "DevOps",
+      "aliases": []
+    },
+    {
+      "name": "Linux",
+      "category": "DevOps",
+      "aliases": [
+        "unix"
+      ]
+    },
+    {
+      "name": "Git",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "GitHub",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "GitLab",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "Jira",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "Postman",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "Figma",
+      "category": "Tools",
+      "aliases": []
+    },
+    {
+      "name": "Machine Learning",
+      "category": "Data / ML",
+      "aliases": [
+        "ml"
+      ]
+    },
+    {
+      "name": "Deep Learning",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "NLP",
+      "category": "Data / ML",
+      "aliases": [
+        "natural language processing"
+      ]
+    },
+    {
+      "name": "Computer Vision",
+      "category": "Data / ML",
+      "aliases": [
+        "opencv"
+      ]
+    },
+    {
+      "name": "scikit-learn",
+      "category": "Data / ML",
+      "aliases": [
+        "sklearn",
+        "scikit learn"
+      ]
+    },
+    {
+      "name": "TensorFlow",
+      "category": "Data / ML",
+      "aliases": [
+        "tensor flow"
+      ]
+    },
+    {
+      "name": "PyTorch",
+      "category": "Data / ML",
+      "aliases": [
+        "torch"
+      ]
+    },
+    {
+      "name": "Keras",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "pandas",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "NumPy",
+      "category": "Data / ML",
+      "aliases": [
+        "numpy"
+      ]
+    },
+    {
+      "name": "Matplotlib",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "Power BI",
+      "category": "Data / ML",
+      "aliases": [
+        "powerbi"
+      ]
+    },
+    {
+      "name": "Tableau",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "Apache Spark",
+      "category": "Data / ML",
+      "aliases": [
+        "pyspark"
+      ]
+    },
+    {
+      "name": "Hadoop",
+      "category": "Data / ML",
+      "aliases": []
+    },
+    {
+      "name": "Data Analysis",
+      "category": "Data / ML",
+      "aliases": [
+        "data analytics"
+      ]
+    },
+    {
+      "name": "Agile",
+      "category": "Practice",
+      "aliases": [
+        "scrum",
+        "kanban"
+      ]
+    },
+    {
+      "name": "Unit Testing",
+      "category": "Practice",
+      "aliases": [
+        "unit tests",
+        "pytest",
+        "jest",
+        "junit"
+      ]
+    },
+    {
+      "name": "System Design",
+      "category": "Practice",
+      "aliases": []
+    },
+    {
+      "name": "Data Structures",
+      "category": "Practice",
+      "aliases": [
+        "dsa",
+        "data structures and algorithms"
+      ]
+    },
+    {
+      "name": "Algorithms",
+      "category": "Practice",
+      "aliases": []
+    },
+    {
+      "name": "OOP",
+      "category": "Practice",
+      "aliases": [
+        "object oriented programming",
+        "object-oriented"
+      ]
+    }
+  ]
+}

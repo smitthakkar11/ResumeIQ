@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 3 of 10 complete (Resume upload & PDF extraction).
+> **Status:** Phase 4 of 10 complete (NLP: preprocessing & skill extraction).
 
 ---
 
@@ -152,11 +152,48 @@ cd frontend && npm run build
 | `POST` | `/api/resumes/upload` | Bearer | upload a PDF, returns extracted text |
 | `GET` | `/api/resumes` | Bearer | your resumes (summaries only) |
 | `GET` | `/api/resumes/{id}` | Bearer | one resume with its text |
+| `GET` | `/api/resumes/{id}/skills` | Bearer | skills detected in a resume |
 | `DELETE` | `/api/resumes/{id}` | Bearer | delete a resume |
 
 Job and analysis endpoints arrive in Phases 4–5. Every resume endpoint filters
 by `user_id` inside the query, and returns **404** (not 403) for someone else's
 resume, so it never confirms that another user's data exists.
+
+### NLP preprocessing
+
+Two paths run from the same extracted text, and keeping them separate is the
+key design decision:
+
+```
+extracted text
+   ├─► light normalise ──► skill extraction   (exact alias matching)
+   └─► full preprocess  ──► TF-IDF / keywords (Phase 5)
+```
+
+If we lemmatised and stripped punctuation before looking for skills, `C++`
+would already be gone. The tokenizer therefore treats `+ # . -` as
+word-**internal** characters — a plain `\w+` turns `C++` into `c`, `.NET` into
+`net` and `Node.js` into two tokens.
+
+Full pipeline: normalise → tokenize → drop stop words → **lemmatize**
+(spaCy `en_core_web_sm`, parser and NER disabled). Lemmatization over stemming
+because it returns real words — `studies → study`, not `studi` — and can use
+part of speech, so `better → well`.
+
+### Skill extraction
+
+A curated dictionary in
+[`skills.json`](backend/app/services/nlp/skills.json) (84 skills), edited as
+data rather than code. Each entry has a canonical name plus aliases, so
+`reactjs`, `react.js` and `react js` all resolve to **React**.
+
+Aliases that are ordinary English words are deliberately excluded — `rest`,
+`spring`, `express`, `node`, `spark` — and `Go` matches only `golang`, never
+the bare word. That trades a few false negatives for avoiding absurd false
+positives like "the rest of the team".
+
+**Limitation:** a dictionary only finds skills it already knows. That is the
+price of being able to explain every match.
 
 ### PDF extraction
 
@@ -208,7 +245,7 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 1 | Foundation: React + FastAPI + MySQL + Alembic | ✅ Done |
 | 2 | Auth: JWT, password hashing, Google Sign-In | ✅ Done |
 | 3 | Resume upload + PDF text extraction | ✅ Done |
-| 4 | NLP: preprocessing, skill dictionary, extraction | ⬜ |
+| 4 | NLP: preprocessing, skill dictionary, extraction | ✅ Done |
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ⬜ |
 | 6 | Results dashboard + charts | ⬜ |
 | 7 | User history + resume versioning | ⬜ |
