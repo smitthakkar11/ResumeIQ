@@ -121,6 +121,29 @@ export const authApi = {
   providers: () => api.get<Providers>('/auth/providers').then((r) => r.data),
 }
 
+export type ResumeSummary = {
+  id: number
+  filename: string
+  page_count: number
+  created_at: string
+}
+
+export type ResumeDetail = ResumeSummary & { extracted_text: string }
+
+export const resumeApi = {
+  upload: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    // Let the browser set Content-Type — it must include the multipart boundary.
+    return api
+      .post<ResumeDetail>('/resumes/upload', form, { headers: { 'Content-Type': undefined } })
+      .then((r) => r.data)
+  },
+  list: () => api.get<ResumeSummary[]>('/resumes').then((r) => r.data),
+  get: (id: number) => api.get<ResumeDetail>(`/resumes/${id}`).then((r) => r.data),
+  remove: (id: number) => api.delete(`/resumes/${id}`).then(() => undefined),
+}
+
 export const fetchHealth = () => api.get<HealthResponse>('/health').then((r) => r.data)
 export const fetchDatabaseHealth = () =>
   api.get<DatabaseHealthResponse>('/health/db').then((r) => r.data)

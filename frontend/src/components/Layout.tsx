@@ -41,6 +41,18 @@ export function Layout() {
                   >
                     Dashboard
                   </NavLink>
+                  <NavLink
+                    to="/resume/upload"
+                    className={({ isActive }) =>
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
+                        isActive
+                          ? 'text-brand-600 dark:text-brand-400'
+                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
+                      }`
+                    }
+                  >
+                    Resumes
+                  </NavLink>
                   <span className="hidden max-w-[14rem] truncate text-sm text-slate-500 md:block dark:text-slate-500">
                     {user.email}
                   </span>
@@ -82,7 +94,7 @@ export function Layout() {
 
       <footer className="border-t border-slate-200 py-6 dark:border-slate-800">
         <p className="mx-auto max-w-6xl px-6 text-sm text-slate-500 dark:text-slate-500">
-          ResumeIQ — resume ↔ job description analysis. Phase 2: authentication.
+          ResumeIQ — resume ↔ job description analysis. Phase 3: resume upload.
         </p>
       </footer>
     </div>

@@ -5,6 +5,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { Landing } from '@/pages/Landing'
 import { Login } from '@/pages/Login'
 import { NotFound } from '@/pages/NotFound'
+import { ResumeUpload } from '@/pages/ResumeUpload'
 import { Signup } from '@/pages/Signup'
 
 /**
@@ -26,7 +27,10 @@ export const router = createBrowserRouter([
       { path: 'signup', element: <Signup /> },
       {
         element: <ProtectedRoute />,
-        children: [{ path: 'dashboard', element: <Dashboard /> }],
+        children: [
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'resume/upload', element: <ResumeUpload /> },
+        ],
       },
       { path: '*', element: <NotFound /> },
     ],

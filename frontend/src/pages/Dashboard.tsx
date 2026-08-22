@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
 
 /**
@@ -10,7 +11,6 @@ export function Dashboard() {
   if (!user) return null
 
   const NEXT = [
-    { phase: 'Phase 3', title: 'Upload a resume', note: 'PDF text extraction with PyMuPDF' },
     { phase: 'Phase 4', title: 'Skill extraction', note: 'dictionary + normalisation' },
     { phase: 'Phase 5', title: 'Match engine', note: 'TF-IDF, cosine similarity, scoring' },
   ]
@@ -25,6 +25,19 @@ export function Dashboard() {
           You&apos;re signed in as {user.email}.
         </p>
       </div>
+
+      <Link
+        to="/resume/upload"
+        className="surface flex max-w-md items-center justify-between gap-4 p-5 transition hover:border-brand-400 dark:hover:border-brand-500/50"
+      >
+        <span>
+          <span className="block font-medium">Upload a resume</span>
+          <span className="block text-sm text-slate-500 dark:text-slate-400">
+            PDF text extraction with PyMuPDF
+          </span>
+        </span>
+        <span aria-hidden className="text-brand-600 dark:text-brand-400">&rarr;</span>
+      </Link>
 
       <section className="surface max-w-md p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">

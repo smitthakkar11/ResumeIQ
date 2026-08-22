@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 2 of 10 complete (Authentication).
+> **Status:** Phase 3 of 10 complete (Resume upload & PDF extraction).
 
 ---
 
@@ -149,8 +149,28 @@ cd frontend && npm run build
 | `POST` | `/api/auth/google` | — | exchange a Google auth code for a token |
 | `GET` | `/api/auth/me` | Bearer | the authenticated user |
 | `GET` | `/api/auth/providers` | — | which sign-in methods are configured |
+| `POST` | `/api/resumes/upload` | Bearer | upload a PDF, returns extracted text |
+| `GET` | `/api/resumes` | Bearer | your resumes (summaries only) |
+| `GET` | `/api/resumes/{id}` | Bearer | one resume with its text |
+| `DELETE` | `/api/resumes/{id}` | Bearer | delete a resume |
 
-Resume, job and analysis endpoints arrive in Phases 3–5.
+Job and analysis endpoints arrive in Phases 4–5. Every resume endpoint filters
+by `user_id` inside the query, and returns **404** (not 403) for someone else's
+resume, so it never confirms that another user's data exists.
+
+### PDF extraction
+
+A PDF stores positioned glyphs, not text — extraction reassembles them, and
+multi-column layouts, tables and ligatures all distort the result. We accept
+that noise deliberately and keep the extracted text visible in the UI so you
+can see exactly what the matching engine will read.
+
+Uploads are validated in cost order: size (5 MB), then magic bytes (`%PDF-` —
+never the filename or `Content-Type`, which the client controls), then parsing.
+Encrypted, corrupt, zero-page and over-20-page files all return 400.
+
+Scanned resumes contain no text layer, so extraction yields nothing. Rather
+than analysing an empty string, we detect it and say so. OCR is out of scope.
 
 ### Authentication
 
@@ -187,7 +207,7 @@ simply does not render, and `POST /api/auth/google` returns 503.
 |---|---|---|
 | 1 | Foundation: React + FastAPI + MySQL + Alembic | ✅ Done |
 | 2 | Auth: JWT, password hashing, Google Sign-In | ✅ Done |
-| 3 | Resume upload + PDF text extraction | ⬜ |
+| 3 | Resume upload + PDF text extraction | ✅ Done |
 | 4 | NLP: preprocessing, skill dictionary, extraction | ⬜ |
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ⬜ |
 | 6 | Results dashboard + charts | ⬜ |
