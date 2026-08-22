@@ -30,6 +30,29 @@ class Settings(BaseSettings):
     # --- Database ---
     DATABASE_URL: str
 
+    # --- Security / JWT ---
+    # Signing key for our own access tokens. Anyone who has this can mint a
+    # valid token for ANY user, so it must be random, secret, and per-environment.
+    # Generate one with:  python -c "import secrets; print(secrets.token_urlsafe(48))"
+    SECRET_KEY: str
+    JWT_ALGORITHM: str = "HS256"
+    # Short-lived on purpose: a JWT cannot be revoked, so expiry is the only
+    # thing bounding the damage from a stolen token.
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
+    BCRYPT_COST: int = 12  # 2^12 = 4096 rounds, ~200ms per hash
+
+    # --- Google OAuth 2.0 ---
+    # Empty by default so the app runs fine without Google configured; the
+    # /api/auth/google endpoint reports 503 instead of crashing at startup.
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://localhost:5174/login"
+
+    @property
+    def google_oauth_configured(self) -> bool:
+        return bool(self.GOOGLE_CLIENT_ID and self.GOOGLE_CLIENT_SECRET)
+
     # --- CORS ---
     # Kept as a plain string on purpose: Pydantic tries to JSON-decode env vars
     # typed as `list`, which chokes on "a,b". We split it ourselves below.

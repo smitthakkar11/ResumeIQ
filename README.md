@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 1 of 10 complete (Foundation).
+> **Status:** Phase 2 of 10 complete (Authentication).
 
 ---
 
@@ -137,15 +137,47 @@ cd frontend && npm run build
 
 ---
 
-## API (Phase 1)
+## API
 
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/` | service metadata |
-| `GET` | `/api/health` | liveness — is the process up? |
-| `GET` | `/api/health/db` | readiness — can it reach MySQL? |
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| `GET` | `/` | — | service metadata |
+| `GET` | `/api/health` | — | liveness — is the process up? |
+| `GET` | `/api/health/db` | — | readiness — can it reach MySQL? |
+| `POST` | `/api/auth/signup` | — | register, returns an access token |
+| `POST` | `/api/auth/login` | — | exchange credentials for a token |
+| `POST` | `/api/auth/google` | — | exchange a Google auth code for a token |
+| `GET` | `/api/auth/me` | Bearer | the authenticated user |
+| `GET` | `/api/auth/providers` | — | which sign-in methods are configured |
 
-Auth, resume, job and analysis endpoints arrive in Phases 2–5.
+Resume, job and analysis endpoints arrive in Phases 3–5.
+
+### Authentication
+
+Passwords are hashed with **bcrypt** at cost 12 (2¹² rounds, ~200 ms per hash)
+with a per-password random salt. Sessions use **JWTs** signed with HS256 and a
+60-minute expiry — short because a JWT cannot be revoked once issued.
+
+Login failures return one message (`Incorrect email or password`) whether the
+email is unknown or the password is wrong, so the endpoint cannot be used to
+enumerate registered accounts.
+
+### Google Sign-In (optional)
+
+Uses the OAuth 2.0 **authorization code flow**. The browser receives a one-time
+code; the backend redeems it with `GOOGLE_CLIENT_SECRET`, verifies the returned
+`id_token` against Google's public keys (checking signature, `aud` and `iss`),
+then issues one of our own JWTs. The client secret never reaches the browser.
+
+To enable it:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials),
+   create an **OAuth client ID** of type *Web application*.
+2. Add `http://localhost:5174/login` as an **Authorized redirect URI**.
+3. Put the client ID and secret in `backend/.env`.
+
+Leave those variables blank and the app runs normally — the Google button
+simply does not render, and `POST /api/auth/google` returns 503.
 
 ---
 
@@ -154,7 +186,7 @@ Auth, resume, job and analysis endpoints arrive in Phases 2–5.
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Foundation: React + FastAPI + MySQL + Alembic | ✅ Done |
-| 2 | Auth: JWT, password hashing, Google Sign-In | ⬜ |
+| 2 | Auth: JWT, password hashing, Google Sign-In | ✅ Done |
 | 3 | Resume upload + PDF text extraction | ⬜ |
 | 4 | NLP: preprocessing, skill dictionary, extraction | ⬜ |
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ⬜ |

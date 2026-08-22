@@ -13,6 +13,11 @@ alembic>=1.14,<2.0
 PyMySQL>=1.1,<2.0
 cryptography>=43.0          # PyMySQL needs this for MySQL 8 caching_sha2_password
 
+# --- Authentication ---
+bcrypt>=4.2,<6.0            # password hashing (slow by design, salted, tunable cost)
+PyJWT[crypto]>=2.9,<3.0     # JWT sign/verify; [crypto] adds RS256 for Google id_tokens
+email-validator>=2.2,<3.0   # backs Pydantic's EmailStr
+
 # --- Testing ---
 pytest>=8.3,<9.0
 httpx>=0.27,<0.29           # required by fastapi.testclient

@@ -7,6 +7,7 @@ migration that DROPs a table it simply never learned about.
 """
 
 from app.db.base_class import Base  # noqa: F401
+from app.models.oauth_account import OAuthAccount  # noqa: F401
 from app.models.user import User  # noqa: F401
 
-__all__ = ["Base", "User"]
+__all__ = ["Base", "OAuthAccount", "User"]
