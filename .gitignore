@@ -1,0 +1,38 @@
+# ---------- Python / backend ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---------- Secrets ----------
+.env
+.env.local
+*.pem
+*.key
+
+# ---------- Uploads / generated data ----------
+backend/uploads/
+backend/storage/
+*.db
+*.sqlite3
+
+# ---------- Node / frontend ----------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- Editors / OS ----------
+.DS_Store
+.idea/
+.vscode/
+*.swp
