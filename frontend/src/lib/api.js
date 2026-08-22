@@ -113,6 +113,8 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  * @property {string}  resume_filename
  * @property {number}  match_score       0-100
  * @property {number}  text_similarity   0-100
+ * @property {number|null} semantic_similarity  0-100; null when the optional
+ *                                              embedding model is unavailable
  * @property {number|null} skill_match    null when the job names no known skills
  * @property {number}  keyword_match     0-100
  * @property {Object.<string, number>}  weights

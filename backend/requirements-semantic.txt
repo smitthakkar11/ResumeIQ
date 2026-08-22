@@ -1,0 +1,13 @@
+# ---------------------------------------------------------------
+# OPTIONAL: Phase 9 local semantic similarity.
+#
+# Pulls in PyTorch (~2GB). The application runs fine without this —
+# semantic similarity is simply reported as unavailable.
+#
+#   pip install -r requirements-semantic.txt
+#
+# The model (all-MiniLM-L6-v2, ~90MB) downloads on first use and is
+# cached in ~/.cache/huggingface. Everything runs locally: no API calls,
+# no data leaves the machine.
+# ---------------------------------------------------------------
+sentence-transformers>=3.0,<6.0

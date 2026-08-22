@@ -59,6 +59,11 @@ class Settings(BaseSettings):
     KEYWORD_MATCH_WEIGHT: float = 0.2
     TOP_KEYWORDS: int = 15
 
+    # Phase 9, optional. Reported alongside TF-IDF similarity, never folded into
+    # the overall score: that would make the score unexplainable and would
+    # silently shift it relative to saved history.
+    SEMANTIC_SIMILARITY_ENABLED: bool = True
+
     # --- CORS ---
     # Kept as a plain string on purpose: Pydantic tries to JSON-decode env vars
     # typed as `list`, which chokes on "a,b". We split it ourselves below.

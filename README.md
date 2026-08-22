@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 7 of 10 complete (User history & versioning).
+> **Status:** Phases 1-7 and 9 complete. Phase 8 (supervised model) deliberately not started — see Roadmap.
 
 ---
 
@@ -29,6 +29,7 @@ keywords from the job description never appear in the resume.
 | Layer | Technology |
 |---|---|
 | Frontend | React 19, Vite, JavaScript, Tailwind CSS v4, React Router, Axios, Recharts |
+| Semantic *(optional)* | sentence-transformers, `all-MiniLM-L6-v2`, run locally |
 | Backend | Python 3.11, FastAPI, Pydantic v2 |
 | Database | MySQL 9, SQLAlchemy 2, Alembic |
 | NLP / ML | scikit-learn, spaCy, pandas, NumPy, PyMuPDF *(Phase 3+)* |
@@ -257,6 +258,46 @@ advice), it is unit-testable, and it cannot hallucinate a skill the candidate
 does not have. The cost is a generic tone, which is an acceptable trade for a
 system whose selling point is that every output is traceable.
 
+### Semantic similarity (optional)
+
+TF-IDF cannot tell that `ML` and `machine learning` mean the same thing, or
+that "led a team" and "managed engineers" describe the same work. A sentence
+embedding can, because it maps text to a position in space where **meaning**
+determines the position.
+
+Measured on this project:
+
+| Resume | Job description | TF-IDF | Semantic |
+|---|---|---:|---:|
+| Built ML models using sklearn | Experience with machine learning and scikit-learn | **0.000** | 0.490 |
+| Led a team of five engineers | Managed a group of software developers | **0.000** | 0.428 |
+| Deployed containerised services to the cloud | Experience with Docker and AWS | **0.000** | 0.556 |
+| I enjoy baking sourdough bread | Experience with Kubernetes and Terraform | 0.000 | 0.022 |
+
+The maths is unchanged — the same cosine formula. Only the vectors differ:
+TF-IDF gives a ~5,000-dimension sparse vector of word counts; the model gives
+384 dense learned coordinates.
+
+`all-MiniLM-L6-v2` truncates at 256 word-pieces (~200 words) and a resume is
+longer, so text is **chunked at 180 words and the vectors mean-pooled** rather
+than silently discarding the tail.
+
+**It is reported alongside the TF-IDF score and never folded into the overall
+match.** Three reasons: it would make the score unexplainable (the whole point
+of this project is that every point traces to a word or a skill), it would
+shift scores relative to already-saved history, and it is an optional
+dependency the core app must work without.
+
+```bash
+pip install -r backend/requirements-semantic.txt
+```
+
+Everything runs locally — no API, nothing leaves the machine. The model
+(~90MB) downloads once and caches. The first analysis after a restart takes
+~10s while the model loads into memory; subsequent ones are under half a
+second. Without the package installed, `semantic_similarity` is simply `null`
+and the comparison card does not render.
+
 #### Honest limitations
 
 - **No semantics.** "ML" and "machine learning" are different dimensions.
@@ -358,8 +399,8 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ✅ Done |
 | 6 | Results dashboard + charts | ✅ Done |
 | 7 | User history + resume versioning | ✅ Done |
-| 8 | *Optional* supervised classifier — only with a real dataset | ⬜ |
-| 9 | *Optional* local sentence-transformer semantic similarity | ⬜ |
+| 8 | *Optional* supervised classifier — only with a real dataset | ⬜ Not started |
+| 9 | *Optional* local sentence-transformer semantic similarity | ✅ Done |
 | 10 | Testing, security, Docker, deployment | ⬜ |
 
 ---

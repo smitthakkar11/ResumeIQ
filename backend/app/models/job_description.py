@@ -1,4 +1,5 @@
-from sqlalchemy import ForeignKey, Index, String, Text
+from sqlalchemy import ForeignKey, Index, String
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base_class import Base, TimestampMixin
@@ -16,5 +17,5 @@ class JobDescription(Base, TimestampMixin):
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
     title: Mapped[str] = mapped_column(String(200), nullable=False, default="")
-    description: Mapped[str] = mapped_column(Text(length=4_294_967_295), nullable=False)
+    description: Mapped[str] = mapped_column(LONGTEXT, nullable=False)
     content_hash: Mapped[str] = mapped_column(String(64), nullable=False)

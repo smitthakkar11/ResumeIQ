@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from app.core.config import settings
 from app.services.analysis.recommendations import Recommendation, build_recommendations
 from app.services.analysis.sections import detect_sections
+from app.services.matching.semantic import semantic_similarity
 from app.services.matching.similarity import resume_token_set, text_similarity, top_keywords
 from app.services.nlp.skill_extractor import Skill, extract_skills
 
@@ -27,6 +28,8 @@ class KeywordHit:
 class MatchResult:
     overall_score: float
     text_similarity: float
+    # Reported for comparison only — deliberately NOT part of overall_score.
+    semantic_similarity: float | None
     skill_match: float | None  # None when the job description names no known skills
     keyword_match: float
     matched_skills: list[Skill] = field(default_factory=list)
@@ -45,6 +48,10 @@ def _pct(value: float) -> float:
 def analyse(resume_text: str, job_text: str) -> MatchResult:
     # --- 1. Text similarity -------------------------------------------------
     similarity = text_similarity(resume_text, job_text)
+
+    # Optional, and never folded into the score: it would make the total
+    # unexplainable and would shift it relative to already-saved history.
+    semantic = semantic_similarity(resume_text, job_text)
 
     # --- 2. Skill match -----------------------------------------------------
     required = set(extract_skills(job_text))
@@ -101,6 +108,7 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
     return MatchResult(
         overall_score=_pct(overall),
         text_similarity=_pct(similarity),
+        semantic_similarity=_pct(semantic) if semantic is not None else None,
         skill_match=_pct(skill_ratio) if skill_ratio is not None else None,
         keyword_match=_pct(keyword_ratio),
         matched_skills=sorted(matched),

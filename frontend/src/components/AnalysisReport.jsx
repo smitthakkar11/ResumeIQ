@@ -2,6 +2,7 @@ import { ComponentBars } from '@/components/ComponentBars'
 import { Recommendations } from '@/components/Recommendations'
 import { ScoreGauge } from '@/components/ScoreGauge'
 import { SectionChecklist } from '@/components/SectionChecklist'
+import { SemanticComparison } from '@/components/SemanticComparison'
 import { SkillBadges } from '@/components/SkillBadges'
 /** The full results view. Shared by /analyze and /results/:id. */
 export function AnalysisReport({ result, divider = false }) {
@@ -28,6 +29,11 @@ export function AnalysisReport({ result, divider = false }) {
           <ComponentBars result={result} />
         </div>
       </div>
+
+      {/* ---- TF-IDF vs embeddings (only when the optional model ran) ---- */}
+      {result.semantic_similarity !== null && result.semantic_similarity !== undefined && (
+        <SemanticComparison result={result} />
+      )}
 
       {/* ---- skills ---- */}
       <div className="grid gap-4 lg:grid-cols-2">

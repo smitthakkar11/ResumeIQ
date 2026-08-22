@@ -65,6 +65,7 @@ def create_analysis(payload: AnalyseRequest, db: DbSession, user: CurrentUser) -
         job_title=payload.job_title.strip(),
         match_score=result.overall_score,
         text_similarity=result.text_similarity,
+        semantic_similarity=result.semantic_similarity,
         skill_match=result.skill_match,
         keyword_match=result.keyword_match,
         weights=result.weights,

@@ -41,6 +41,11 @@ class AnalysisDetail(AnalysisSummary):
     job_description_id: int | None
 
     text_similarity: float
+    semantic_similarity: float | None = Field(
+        default=None,
+        description="Local sentence-embedding similarity. null when the optional "
+        "model is not installed. Reported for comparison; not part of match_score.",
+    )
     skill_match: float | None = Field(
         default=None, description="null when the job description names no skills we recognise"
     )

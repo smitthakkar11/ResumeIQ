@@ -38,6 +38,8 @@ class Analysis(Base, TimestampMixin):
 
     match_score: Mapped[float] = mapped_column(Float, nullable=False)
     text_similarity: Mapped[float] = mapped_column(Float, nullable=False)
+    # Nullable: null means the optional model was unavailable when this ran.
+    semantic_similarity: Mapped[float | None] = mapped_column(Float, nullable=True)
     skill_match: Mapped[float | None] = mapped_column(Float, nullable=True)
     keyword_match: Mapped[float] = mapped_column(Float, nullable=False)
 
