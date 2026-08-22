@@ -29,11 +29,11 @@ class TestAnalyseEndpoint:
             headers=auth_headers,
             json={"resume_id": resume_id, "job_title": "SWE Intern", "job_description": JOB},
         )
-        assert response.status_code == 200
+        assert response.status_code == 201
 
         body = response.json()
         assert body["job_title"] == "SWE Intern"
-        assert 0 <= body["overall_score"] <= 100
+        assert 0 <= body["match_score"] <= 100
         assert {s["name"] for s in body["matched_skills"]} >= {"Python", "React", "MySQL"}
         assert {s["name"] for s in body["missing_skills"]} >= {"Docker", "Kubernetes"}
         assert any(k["term"] == "docker" and not k["found"] for k in body["keywords"])

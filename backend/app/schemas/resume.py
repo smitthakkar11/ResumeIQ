@@ -11,6 +11,7 @@ class ResumeSummary(BaseModel):
     id: int
     filename: str
     page_count: int
+    version: int
     created_at: datetime
 
 

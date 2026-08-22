@@ -16,3 +16,6 @@ class Resume(Base, TimestampMixin):
     # need text. LONGTEXT because MySQL's TEXT caps at 64KB.
     extracted_text: Mapped[str] = mapped_column(Text(length=4_294_967_295), nullable=False)
     page_count: Mapped[int] = mapped_column(nullable=False, default=1)
+    # 1, 2, 3... per user, so the UI can label uploads "v2" without
+    # the user having to name them.
+    version: Mapped[int] = mapped_column(nullable=False, default=1)

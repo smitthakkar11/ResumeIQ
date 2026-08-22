@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout'
 import { Spinner } from '@/components/Spinner'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Dashboard } from '@/pages/Dashboard'
+import { History } from '@/pages/History'
 import { Landing } from '@/pages/Landing'
 import { Login } from '@/pages/Login'
 import { NotFound } from '@/pages/NotFound'
@@ -13,6 +14,7 @@ import { Signup } from '@/pages/Signup'
 // Lazy-loaded: this page pulls in Recharts, which is large and only needed
 // once a user actually runs an analysis.
 const Analyze = lazy(() => import('@/pages/Analyze').then((m) => ({ default: m.Analyze })))
+const Results = lazy(() => import('@/pages/Results').then((m) => ({ default: m.Results })))
 
 
 /**
@@ -37,6 +39,15 @@ export const router = createBrowserRouter([
         children: [
           { path: 'dashboard', element: <Dashboard /> },
           { path: 'resume/upload', element: <ResumeUpload /> },
+          { path: 'history', element: <History /> },
+          {
+            path: 'results/:id',
+            element: (
+              <Suspense fallback={<Spinner />}>
+                <Results />
+              </Suspense>
+            ),
+          },
           {
             path: 'analyze',
             element: (

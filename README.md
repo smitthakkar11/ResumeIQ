@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 6 of 10 complete (Results dashboard).
+> **Status:** Phase 7 of 10 complete (User history & versioning).
 
 ---
 
@@ -154,7 +154,12 @@ cd frontend && npm run build
 | `GET` | `/api/resumes/{id}` | Bearer | one resume with its text |
 | `GET` | `/api/resumes/{id}/skills` | Bearer | skills detected in a resume |
 | `DELETE` | `/api/resumes/{id}` | Bearer | delete a resume |
-| `POST` | `/api/analyses` | Bearer | score a resume against a job description |
+| `POST` | `/api/analyses` | Bearer | score a resume against a job description, and save it |
+| `GET` | `/api/analyses` | Bearer | your history, newest first |
+| `GET` | `/api/analyses/{id}` | Bearer | one saved analysis |
+| `DELETE` | `/api/analyses/{id}` | Bearer | delete an analysis |
+| `GET` | `/api/jobs` | Bearer | job descriptions you have analysed against |
+| `GET` | `/api/jobs/{id}` | Bearer | one job description |
 
 Job and analysis endpoints arrive in Phases 4–5. Every resume endpoint filters
 by `user_id` inside the query, and returns **404** (not 403) for someone else's
@@ -192,6 +197,40 @@ those words.
 **If the job description names no skills we recognise**, the skill component is
 *dropped* and the remaining weights are rescaled, rather than scored as 0.
 We did not measure it; reporting 0 would be misleading.
+
+### History and persistence
+
+Analyses are stored as **immutable snapshots**, not recomputed on read. The
+skill dictionary and the scoring weights change over time; if we recomputed, an
+analysis you ran in August would silently show a different score in September.
+This is deliberate denormalisation — the data is derivable in principle, but
+the derivation is not stable.
+
+`matched_skills`, `keywords`, `sections` and `recommendations` are MySQL `JSON`
+columns rather than four more tables, because we only ever read them back whole
+to render one page. The rule: **normalise what you query, serialise what you
+only display.** If "find every analysis where Docker was missing" ever becomes
+a requirement, that is the moment to normalise.
+
+**Deleting a resume does not delete its analyses.** The foreign key is
+`ON DELETE SET NULL`, and `resume_filename` is stored on the analysis row, so
+history stays readable rather than developing holes. `user_id` keeps
+`ON DELETE CASCADE` — deleting an account should genuinely erase everything.
+
+The history query is always "my analyses, newest first", so there is a
+composite index on `(user_id, created_at)`: one index serves both the filter
+and the sort, with no filesort.
+
+Analysing the same posting against three resume versions reuses one
+`job_descriptions` row, matched on a **SHA-256 of the content** (a `LONGTEXT`
+column cannot be usefully indexed for equality).
+
+Resumes get a per-user `version` number on upload — v1, v2, v3 — so the UI can
+label them without asking the user to name anything.
+
+> **Not implemented:** `POST /api/jobs` from the original spec. Job descriptions
+> are created as part of running an analysis, so a second creation path would
+> add a way to make rows that nothing reads.
 
 ### Resume structure
 
@@ -318,7 +357,7 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 4 | NLP: preprocessing, skill dictionary, extraction | ✅ Done |
 | 5 | Matching engine: TF-IDF, cosine similarity, scoring | ✅ Done |
 | 6 | Results dashboard + charts | ✅ Done |
-| 7 | User history + resume versioning | ⬜ |
+| 7 | User history + resume versioning | ✅ Done |
 | 8 | *Optional* supervised classifier — only with a real dataset | ⬜ |
 | 9 | *Optional* local sentence-transformer semantic similarity | ⬜ |
 | 10 | Testing, security, Docker, deployment | ⬜ |

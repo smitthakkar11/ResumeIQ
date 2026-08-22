@@ -1,5 +1,5 @@
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.resume import Resume
@@ -38,8 +38,15 @@ async def upload_resume(
     except PdfError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(exc)) from None
 
+    # Version numbers are per user: v1, v2, v3... so the UI can label uploads
+    # without asking the user to name them.
+    previous = db.execute(
+        select(func.count()).select_from(Resume).where(Resume.user_id == user.id)
+    ).scalar_one()
+
     resume = Resume(
         user_id=user.id,
+        version=previous + 1,
         filename=(file.filename or "resume.pdf")[:255],
         extracted_text=text,
         page_count=page_count,

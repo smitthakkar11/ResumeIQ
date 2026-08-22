@@ -7,8 +7,10 @@ migration that DROPs a table it simply never learned about.
 """
 
 from app.db.base_class import Base  # noqa: F401
+from app.models.analysis import Analysis  # noqa: F401
+from app.models.job_description import JobDescription  # noqa: F401
 from app.models.oauth_account import OAuthAccount  # noqa: F401
 from app.models.resume import Resume  # noqa: F401
 from app.models.user import User  # noqa: F401
 
-__all__ = ["Base", "OAuthAccount", "Resume", "User"]
+__all__ = ["Analysis", "Base", "JobDescription", "OAuthAccount", "Resume", "User"]

@@ -125,6 +125,7 @@ export type ResumeSummary = {
   id: number
   filename: string
   page_count: number
+  version: number
   created_at: string
 }
 
@@ -153,11 +154,17 @@ export const resumeApi = {
   remove: (id: number) => api.delete(`/resumes/${id}`).then(() => undefined),
 }
 
-export type AnalysisResponse = {
-  resume_id: number
-  resume_filename: string
+export type AnalysisSummary = {
+  id: number
   job_title: string
-  overall_score: number
+  resume_filename: string
+  match_score: number
+  created_at: string
+}
+
+export type AnalysisResponse = AnalysisSummary & {
+  resume_id: number | null
+  job_description_id: number | null
   text_similarity: number
   skill_match: number | null
   keyword_match: number
@@ -170,6 +177,8 @@ export type AnalysisResponse = {
   recommendations: { category: string; message: string }[]
 }
 
+export type JobDetail = { id: number; title: string; description: string; created_at: string }
+
 export const analysisApi = {
   create: (resumeId: number, jobTitle: string, jobDescription: string) =>
     api
@@ -179,6 +188,13 @@ export const analysisApi = {
         job_description: jobDescription,
       })
       .then((r) => r.data),
+  list: () => api.get<AnalysisSummary[]>('/analyses').then((r) => r.data),
+  get: (id: number) => api.get<AnalysisResponse>(`/analyses/${id}`).then((r) => r.data),
+  remove: (id: number) => api.delete(`/analyses/${id}`).then(() => undefined),
+}
+
+export const jobApi = {
+  get: (id: number) => api.get<JobDetail>(`/jobs/${id}`).then((r) => r.data),
 }
 
 export const fetchHealth = () => api.get<HealthResponse>('/health').then((r) => r.data)

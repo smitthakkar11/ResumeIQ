@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AnalyseRequest(BaseModel):
@@ -22,15 +24,25 @@ class RecommendationItem(BaseModel):
     message: str
 
 
-class AnalysisResponse(BaseModel):
-    resume_id: int
-    resume_filename: str
-    job_title: str
+class AnalysisSummary(BaseModel):
+    """History list view — no JSON blobs, so the list stays light."""
 
-    overall_score: float
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    job_title: str
+    resume_filename: str
+    match_score: float
+    created_at: datetime
+
+
+class AnalysisDetail(AnalysisSummary):
+    resume_id: int | None
+    job_description_id: int | None
+
     text_similarity: float
     skill_match: float | None = Field(
-        description="null when the job description names no skills we recognise"
+        default=None, description="null when the job description names no skills we recognise"
     )
     keyword_match: float
     weights: dict[str, float]
@@ -41,3 +53,15 @@ class AnalysisResponse(BaseModel):
     keywords: list[KeywordItem]
     sections: dict[str, bool]
     recommendations: list[RecommendationItem]
+
+
+class JobSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    created_at: datetime
+
+
+class JobDetail(JobSummary):
+    description: str

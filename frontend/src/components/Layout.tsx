@@ -65,13 +65,22 @@ export function Layout() {
                   >
                     Analyze
                   </NavLink>
-                  <span className="hidden max-w-[14rem] truncate text-sm text-slate-500 md:block dark:text-slate-500">
-                    {user.email}
-                  </span>
+                  <NavLink
+                    to="/history"
+                    className={({ isActive }) =>
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
+                        isActive
+                          ? 'text-brand-600 dark:text-brand-400'
+                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
+                      }`
+                    }
+                  >
+                    History
+                  </NavLink>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition
+                    className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition
                                hover:bg-slate-100 hover:text-slate-900
                                dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                   >
@@ -106,7 +115,7 @@ export function Layout() {
 
       <footer className="border-t border-slate-200 py-6 dark:border-slate-800">
         <p className="mx-auto max-w-6xl px-6 text-sm text-slate-500 dark:text-slate-500">
-          ResumeIQ — resume ↔ job description analysis. Phase 6: results dashboard.
+          ResumeIQ — resume ↔ job description analysis. Phase 7: history and versioning.
         </p>
       </footer>
     </div>

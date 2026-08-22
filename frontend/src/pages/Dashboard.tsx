@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ScorePill } from '@/components/ScorePill'
+import { analysisApi, type AnalysisSummary } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 
 /**
@@ -8,11 +11,18 @@ import { useAuth } from '@/lib/auth'
  */
 export function Dashboard() {
   const { user } = useAuth()
+  const [recent, setRecent] = useState<AnalysisSummary[]>([])
+
+  useEffect(() => {
+    analysisApi.list().then((all) => setRecent(all.slice(0, 5))).catch(() => setRecent([]))
+  }, [])
+
   if (!user) return null
 
   const NEXT = [
-    { phase: 'Phase 4', title: 'Skill extraction', note: 'dictionary + normalisation' },
-    { phase: 'Phase 5', title: 'Match engine', note: 'TF-IDF, cosine similarity, scoring' },
+    { phase: 'Phase 8', title: 'Supervised model', note: 'only with a real dataset' },
+    { phase: 'Phase 9', title: 'Semantic similarity', note: 'local sentence embeddings' },
+    { phase: 'Phase 10', title: 'Deployment', note: 'Docker, security, docs' },
   ]
 
   return (
@@ -56,6 +66,56 @@ export function Dashboard() {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section>
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Recent analyses
+          </h2>
+          {recent.length > 0 && (
+            <Link to="/history" className="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+              View all
+            </Link>
+          )}
+        </div>
+
+        {recent.length === 0 ? (
+          <div className="surface mt-4 p-6 text-center">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              No analyses yet.{' '}
+              <Link to="/analyze" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+                Run one
+              </Link>
+              .
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-4 space-y-2">
+            {recent.map((a) => (
+              <li key={a.id}>
+                <Link
+                  to={`/results/${a.id}`}
+                  className="surface flex items-center justify-between gap-4 p-4 transition hover:border-brand-400 dark:hover:border-brand-500/50"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">
+                      {a.job_title || 'Untitled role'}
+                    </span>
+                    <span className="block truncate text-xs text-slate-500 dark:text-slate-400">
+                      {a.resume_filename} ·{' '}
+                      {new Date(a.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </span>
+                  </span>
+                  <ScorePill score={a.match_score} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section>

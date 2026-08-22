@@ -146,7 +146,12 @@ export function ResumeUpload() {
             {resumes.map((r) => (
               <li key={r.id} className="surface flex items-center justify-between gap-4 p-4">
                 <div className="min-w-0">
-                  <p className="truncate font-medium">{r.filename}</p>
+                  <p className="flex items-center gap-2 truncate font-medium">
+                    <span className="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                      v{r.version}
+                    </span>
+                    <span className="truncate">{r.filename}</span>
+                  </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     {r.page_count} page{r.page_count === 1 ? '' : 's'} ·{' '}
                     {new Date(r.created_at).toLocaleDateString()}
