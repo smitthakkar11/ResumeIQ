@@ -19,11 +19,17 @@ export function ProtectedRoute() {
   if (initialising) {
     return <Spinner />
   }
-
   if (!user) {
     // `state.from` lets the login page send them back where they were headed.
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          from: location.pathname,
+        }}
+      />
+    )
   }
-
   return <Outlet />
 }

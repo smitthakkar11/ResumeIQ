@@ -1,25 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { SkillBadges } from '@/components/SkillBadges'
 import { Alert, Button } from '@/components/ui'
-import {
-  errorMessage,
-  resumeApi,
-  type ResumeDetail,
-  type ResumeSkills,
-  type ResumeSummary,
-} from '@/lib/api'
-
+import { errorMessage, resumeApi } from '@/lib/api'
 const MAX_MB = 5
-
 export function ResumeUpload() {
-  const [resumes, setResumes] = useState<ResumeSummary[]>([])
+  const [resumes, setResumes] = useState([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
-  const [preview, setPreview] = useState<ResumeDetail | null>(null)
-  const [skills, setSkills] = useState<ResumeSkills | null>(null)
+  const [preview, setPreview] = useState(null)
+  const [skills, setSkills] = useState(null)
   const [dragging, setDragging] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef(null)
 
   // Skills are fetched alongside whichever resume is being previewed.
   useEffect(() => {
@@ -36,7 +28,6 @@ export function ResumeUpload() {
       cancelled = true
     }
   }, [preview])
-
   useEffect(() => {
     resumeApi
       .list()
@@ -44,8 +35,7 @@ export function ResumeUpload() {
       .catch((e) => setError(errorMessage(e, 'Could not load your resumes')))
       .finally(() => setLoading(false))
   }, [])
-
-  async function handleFile(file: File | undefined) {
+  async function handleFile(file) {
     if (!file) return
     setError('')
 
@@ -54,7 +44,6 @@ export function ResumeUpload() {
       setError(`"${file.name}" is larger than ${MAX_MB} MB.`)
       return
     }
-
     setUploading(true)
     try {
       const created = await resumeApi.upload(file)
@@ -67,8 +56,7 @@ export function ResumeUpload() {
       if (inputRef.current) inputRef.current.value = ''
     }
   }
-
-  async function handleDelete(id: number) {
+  async function handleDelete(id) {
     try {
       await resumeApi.remove(id)
       setResumes((prev) => prev.filter((r) => r.id !== id))
@@ -77,7 +65,6 @@ export function ResumeUpload() {
       setError(errorMessage(e, 'Could not delete that resume'))
     }
   }
-
   return (
     <div className="space-y-8">
       <div>
@@ -101,15 +88,9 @@ export function ResumeUpload() {
           setDragging(false)
           handleFile(e.dataTransfer.files[0])
         }}
-        className={`rounded-xl border-2 border-dashed p-10 text-center transition ${
-          dragging
-            ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10'
-            : 'border-slate-300 dark:border-slate-700'
-        }`}
+        className={`rounded-xl border-2 border-dashed p-10 text-center transition ${dragging ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10' : 'border-slate-300 dark:border-slate-700'}`}
       >
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Drag a PDF here, or
-        </p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Drag a PDF here, or</p>
         <div className="mx-auto mt-3 max-w-[12rem]">
           <Button type="button" loading={uploading} onClick={() => inputRef.current?.click()}>
             {uploading ? 'Extracting…' : 'Choose file'}
@@ -160,7 +141,12 @@ export function ResumeUpload() {
                 <div className="flex shrink-0 gap-2 text-sm">
                   <button
                     type="button"
-                    onClick={() => resumeApi.get(r.id).then(setPreview).catch(() => {})}
+                    onClick={() =>
+                      resumeApi
+                        .get(r.id)
+                        .then(setPreview)
+                        .catch(() => {})
+                    }
                     className="rounded-lg px-2.5 py-1.5 font-medium text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-500/10"
                   >
                     View text

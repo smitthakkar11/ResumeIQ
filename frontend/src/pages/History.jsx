@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ScorePill } from '@/components/ScorePill'
 import { Alert } from '@/components/ui'
-import { analysisApi, errorMessage, type AnalysisSummary } from '@/lib/api'
-
+import { analysisApi, errorMessage } from '@/lib/api'
 export function History() {
-  const [items, setItems] = useState<AnalysisSummary[]>([])
+  const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
   useEffect(() => {
     analysisApi
       .list()
@@ -16,8 +14,7 @@ export function History() {
       .catch((e) => setError(errorMessage(e, 'Could not load your history')))
       .finally(() => setLoading(false))
   }, [])
-
-  async function handleDelete(id: number) {
+  async function handleDelete(id) {
     try {
       await analysisApi.remove(id)
       setItems((prev) => prev.filter((a) => a.id !== id))
@@ -25,14 +22,12 @@ export function History() {
       setError(errorMessage(e, 'Could not delete that analysis'))
     }
   }
-
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">History</h1>
         <p className="mt-1.5 text-slate-600 dark:text-slate-400">
-          Every analysis you have run. Results are stored as computed, so past
-          scores never change.
+          Every analysis you have run. Results are stored as computed, so past scores never change.
         </p>
       </div>
 
@@ -42,9 +37,7 @@ export function History() {
         <p className="text-sm text-slate-500">Loading…</p>
       ) : items.length === 0 ? (
         <div className="surface p-10 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No analyses yet.
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">No analyses yet.</p>
           <Link
             to="/analyze"
             className="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"

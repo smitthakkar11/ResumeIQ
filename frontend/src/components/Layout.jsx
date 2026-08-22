@@ -1,20 +1,21 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useAuth } from '@/lib/auth'
-
 export function Layout() {
   const { user, logout, initialising } = useAuth()
   const navigate = useNavigate()
-
   function handleLogout() {
     logout()
-    navigate('/', { replace: true })
+    navigate('/', {
+      replace: true,
+    })
   }
-
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur
-                         dark:border-slate-800 dark:bg-slate-950/80">
+      <header
+        className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur
+                         dark:border-slate-800 dark:bg-slate-950/80"
+      >
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <Link to={user ? '/dashboard' : '/'} className="flex shrink-0 items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-lg bg-brand-600 font-bold text-white">
@@ -32,11 +33,7 @@ export function Layout() {
                   <NavLink
                     to="/dashboard"
                     className={({ isActive }) =>
-                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
-                        isActive
-                          ? 'text-brand-600 dark:text-brand-400'
-                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
-                      }`
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'}`
                     }
                   >
                     Dashboard
@@ -44,11 +41,7 @@ export function Layout() {
                   <NavLink
                     to="/resume/upload"
                     className={({ isActive }) =>
-                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
-                        isActive
-                          ? 'text-brand-600 dark:text-brand-400'
-                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
-                      }`
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'}`
                     }
                   >
                     Resumes
@@ -56,11 +49,7 @@ export function Layout() {
                   <NavLink
                     to="/analyze"
                     className={({ isActive }) =>
-                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
-                        isActive
-                          ? 'text-brand-600 dark:text-brand-400'
-                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
-                      }`
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'}`
                     }
                   >
                     Analyze
@@ -68,11 +57,7 @@ export function Layout() {
                   <NavLink
                     to="/history"
                     className={({ isActive }) =>
-                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${
-                        isActive
-                          ? 'text-brand-600 dark:text-brand-400'
-                          : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
-                      }`
+                      `hidden rounded-lg px-3 py-2 text-sm font-medium transition sm:block ${isActive ? 'text-brand-600 dark:text-brand-400' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'}`
                     }
                   >
                     History

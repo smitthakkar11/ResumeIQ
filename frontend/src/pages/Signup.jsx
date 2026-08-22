@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GoogleButton } from '@/components/GoogleButton'
 import { Alert, Button, Field } from '@/components/ui'
@@ -7,40 +7,39 @@ import { useAuth } from '@/lib/auth'
 
 /** Mirrors the backend's SignupRequest rules so users see errors before a round trip. */
 const MIN_PASSWORD_LENGTH = 8
-
 export function Signup() {
   const { signup, user } = useAuth()
   const navigate = useNavigate()
-
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
   useEffect(() => {
-    if (user) navigate('/dashboard', { replace: true })
+    if (user)
+      navigate('/dashboard', {
+        replace: true,
+      })
   }, [user, navigate])
-
   const passwordError =
     password.length > 0 && password.length < MIN_PASSWORD_LENGTH
       ? `At least ${MIN_PASSWORD_LENGTH} characters`
       : undefined
-
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event) {
     event.preventDefault()
     setError('')
     setLoading(true)
     try {
       await signup(name, email, password)
-      navigate('/dashboard', { replace: true })
+      navigate('/dashboard', {
+        replace: true,
+      })
     } catch (err) {
       setError(errorMessage(err, 'Could not create your account'))
     } finally {
       setLoading(false)
     }
   }
-
   return (
     <div className="mx-auto max-w-sm py-8">
       <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
@@ -89,7 +88,10 @@ export function Signup() {
 
       <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
         Already registered?{' '}
-        <Link to="/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+        <Link
+          to="/login"
+          className="font-medium text-brand-600 hover:underline dark:text-brand-400"
+        >
           Sign in
         </Link>
       </p>

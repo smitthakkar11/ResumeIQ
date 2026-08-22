@@ -1,25 +1,16 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { AnalysisReport } from '@/components/AnalysisReport'
 import { Alert, Button, Field } from '@/components/ui'
-import {
-  analysisApi,
-  errorMessage,
-  resumeApi,
-  type AnalysisResponse,
-  type ResumeSummary,
-} from '@/lib/api'
-
+import { analysisApi, errorMessage, resumeApi } from '@/lib/api'
 const MIN_JD_LENGTH = 50
-
 export function Analyze() {
-  const [resumes, setResumes] = useState<ResumeSummary[]>([])
-  const [resumeId, setResumeId] = useState<number | ''>('')
+  const [resumes, setResumes] = useState([])
+  const [resumeId, setResumeId] = useState('')
   const [jobTitle, setJobTitle] = useState('')
   const [jobDescription, setJobDescription] = useState('')
-  const [result, setResult] = useState<AnalysisResponse | null>(null)
+  const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-
   useEffect(() => {
     resumeApi
       .list()
@@ -29,8 +20,7 @@ export function Analyze() {
       })
       .catch((e) => setError(errorMessage(e, 'Could not load your resumes')))
   }, [])
-
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event) {
     event.preventDefault()
     if (resumeId === '') return
     setError('')
@@ -43,9 +33,7 @@ export function Analyze() {
       setLoading(false)
     }
   }
-
   const tooShort = jobDescription.length > 0 && jobDescription.length < MIN_JD_LENGTH
-
   return (
     <div className="space-y-8">
       <div>

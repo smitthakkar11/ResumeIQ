@@ -13,9 +13,16 @@ import { Signup } from '@/pages/Signup'
 
 // Lazy-loaded: this page pulls in Recharts, which is large and only needed
 // once a user actually runs an analysis.
-const Analyze = lazy(() => import('@/pages/Analyze').then((m) => ({ default: m.Analyze })))
-const Results = lazy(() => import('@/pages/Results').then((m) => ({ default: m.Results })))
-
+const Analyze = lazy(() =>
+  import('@/pages/Analyze').then((m) => ({
+    default: m.Analyze,
+  })),
+)
+const Results = lazy(() =>
+  import('@/pages/Results').then((m) => ({
+    default: m.Results,
+  })),
+)
 
 /**
  * Route table.
@@ -31,15 +38,33 @@ export const router = createBrowserRouter([
     path: '/',
     element: <Layout />,
     children: [
-      { index: true, element: <Landing /> },
-      { path: 'login', element: <Login /> },
-      { path: 'signup', element: <Signup /> },
+      {
+        index: true,
+        element: <Landing />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'signup',
+        element: <Signup />,
+      },
       {
         element: <ProtectedRoute />,
         children: [
-          { path: 'dashboard', element: <Dashboard /> },
-          { path: 'resume/upload', element: <ResumeUpload /> },
-          { path: 'history', element: <History /> },
+          {
+            path: 'dashboard',
+            element: <Dashboard />,
+          },
+          {
+            path: 'resume/upload',
+            element: <ResumeUpload />,
+          },
+          {
+            path: 'history',
+            element: <History />,
+          },
           {
             path: 'results/:id',
             element: (
@@ -58,7 +83,10 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      { path: '*', element: <NotFound /> },
+      {
+        path: '*',
+        element: <NotFound />,
+      },
     ],
   },
 ])

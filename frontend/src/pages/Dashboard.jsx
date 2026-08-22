@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ScorePill } from '@/components/ScorePill'
-import { analysisApi, type AnalysisSummary } from '@/lib/api'
+import { analysisApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 
 /**
@@ -11,26 +11,35 @@ import { useAuth } from '@/lib/auth'
  */
 export function Dashboard() {
   const { user } = useAuth()
-  const [recent, setRecent] = useState<AnalysisSummary[]>([])
-
+  const [recent, setRecent] = useState([])
   useEffect(() => {
-    analysisApi.list().then((all) => setRecent(all.slice(0, 5))).catch(() => setRecent([]))
+    analysisApi
+      .list()
+      .then((all) => setRecent(all.slice(0, 5)))
+      .catch(() => setRecent([]))
   }, [])
-
   if (!user) return null
-
   const NEXT = [
-    { phase: 'Phase 8', title: 'Supervised model', note: 'only with a real dataset' },
-    { phase: 'Phase 9', title: 'Semantic similarity', note: 'local sentence embeddings' },
-    { phase: 'Phase 10', title: 'Deployment', note: 'Docker, security, docs' },
+    {
+      phase: 'Phase 8',
+      title: 'Supervised model',
+      note: 'only with a real dataset',
+    },
+    {
+      phase: 'Phase 9',
+      title: 'Semantic similarity',
+      note: 'local sentence embeddings',
+    },
+    {
+      phase: 'Phase 10',
+      title: 'Deployment',
+      note: 'Docker, security, docs',
+    },
   ]
-
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Hello, {user.name.split(' ')[0]}
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Hello, {user.name.split(' ')[0]}</h1>
         <p className="mt-1.5 text-slate-600 dark:text-slate-400">
           You&apos;re signed in as {user.email}.
         </p>
@@ -46,7 +55,9 @@ export function Dashboard() {
             PDF text extraction with PyMuPDF
           </span>
         </span>
-        <span aria-hidden className="text-brand-600 dark:text-brand-400">&rarr;</span>
+        <span aria-hidden className="text-brand-600 dark:text-brand-400">
+          &rarr;
+        </span>
       </Link>
 
       <section className="surface max-w-md p-5">
@@ -74,7 +85,10 @@ export function Dashboard() {
             Recent analyses
           </h2>
           {recent.length > 0 && (
-            <Link to="/history" className="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+            <Link
+              to="/history"
+              className="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400"
+            >
               View all
             </Link>
           )}
@@ -84,7 +98,10 @@ export function Dashboard() {
           <div className="surface mt-4 p-6 text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               No analyses yet.{' '}
-              <Link to="/analyze" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+              <Link
+                to="/analyze"
+                className="font-medium text-brand-600 hover:underline dark:text-brand-400"
+              >
                 Run one
               </Link>
               .

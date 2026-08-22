@@ -1,24 +1,35 @@
 import { useEffect, useState } from 'react'
-import { StatusRow, type StatusState } from '@/components/StatusRow'
+import { StatusRow } from '@/components/StatusRow'
 import { fetchDatabaseHealth, fetchHealth } from '@/lib/api'
-
 const PIPELINE = [
-  { step: 'Extract', note: 'PDF → text (PyMuPDF)' },
-  { step: 'Preprocess', note: 'clean, tokenise, lemmatise' },
-  { step: 'Represent', note: 'TF-IDF vectors' },
-  { step: 'Compare', note: 'cosine similarity + skill match' },
-  { step: 'Score', note: 'transparent weighted breakdown' },
+  {
+    step: 'Extract',
+    note: 'PDF → text (PyMuPDF)',
+  },
+  {
+    step: 'Preprocess',
+    note: 'clean, tokenise, lemmatise',
+  },
+  {
+    step: 'Represent',
+    note: 'TF-IDF vectors',
+  },
+  {
+    step: 'Compare',
+    note: 'cosine similarity + skill match',
+  },
+  {
+    step: 'Score',
+    note: 'transparent weighted breakdown',
+  },
 ]
-
 export function Landing() {
-  const [apiState, setApiState] = useState<StatusState>('loading')
+  const [apiState, setApiState] = useState('loading')
   const [apiDetail, setApiDetail] = useState('checking…')
-  const [dbState, setDbState] = useState<StatusState>('loading')
+  const [dbState, setDbState] = useState('loading')
   const [dbDetail, setDbDetail] = useState('checking…')
-
   useEffect(() => {
     let cancelled = false
-
     fetchHealth()
       .then((h) => {
         if (cancelled) return
@@ -30,7 +41,6 @@ export function Landing() {
         setApiState('error')
         setApiDetail('unreachable')
       })
-
     fetchDatabaseHealth()
       .then((d) => {
         if (cancelled) return
@@ -42,27 +52,27 @@ export function Landing() {
         setDbState('error')
         setDbDetail('unreachable')
       })
-
     return () => {
       cancelled = true
     }
   }, [])
-
   return (
     <div className="space-y-14">
       {/* ---------- Hero ---------- */}
       <section className="max-w-2xl">
-        <span className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700
-                         dark:bg-brand-500/10 dark:text-brand-300">
+        <span
+          className="inline-flex items-center rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700
+                         dark:bg-brand-500/10 dark:text-brand-300"
+        >
           Phase 1 · Foundation
         </span>
         <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl">
           Know exactly why your resume matches — or doesn&apos;t.
         </h1>
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-          ResumeIQ compares a resume against a job description using classical NLP: TF-IDF,
-          cosine similarity and explicit skill matching. Every number in the score is one you
-          can trace back to the text. No black box, no LLM.
+          ResumeIQ compares a resume against a job description using classical NLP: TF-IDF, cosine
+          similarity and explicit skill matching. Every number in the score is one you can trace
+          back to the text. No black box, no LLM.
         </p>
       </section>
 
@@ -74,9 +84,7 @@ export function Landing() {
         <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {PIPELINE.map(({ step, note }, i) => (
             <li key={step} className="surface p-4">
-              <span className="font-mono text-xs text-brand-600 dark:text-brand-400">
-                0{i + 1}
-              </span>
+              <span className="font-mono text-xs text-brand-600 dark:text-brand-400">0{i + 1}</span>
               <p className="mt-1.5 font-medium">{step}</p>
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{note}</p>
             </li>

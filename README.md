@@ -28,7 +28,7 @@ keywords from the job description never appear in the resume.
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, TypeScript, Tailwind CSS v4, React Router, Axios |
+| Frontend | React 19, Vite, JavaScript, Tailwind CSS v4, React Router, Axios, Recharts |
 | Backend | Python 3.11, FastAPI, Pydantic v2 |
 | Database | MySQL 9, SQLAlchemy 2, Alembic |
 | NLP / ML | scikit-learn, spaCy, pandas, NumPy, PyMuPDF *(Phase 3+)* |
@@ -132,7 +132,7 @@ cd backend && .venv/bin/pytest -q
 ```
 
 ```bash
-cd frontend && npm run build
+cd frontend && npm run build && npm run lint
 ```
 
 ---
@@ -364,120 +364,21 @@ simply does not render, and `POST /api/auth/google` returns 503.
 
 ---
 
-## TypeScript in this project
+## Frontend notes
 
-Every pattern below appears in the real code, with the file it lives in. If you
-are asked "why TypeScript?" in an interview, the honest answer is the two bugs
-it caught while this was being built:
+Plain JavaScript, no TypeScript build step — `npm run build` is just
+`vite build`.
 
-- Renaming `overall_score` to `match_score` in Phase 7 broke three frontend
-  files. The build failed immediately instead of rendering `undefined%` in a
-  chart.
-- A Recharts label formatter was typed as `(v: number) => string`, but the
-  library can pass `undefined`. Caught at compile time, not by a user seeing
-  `NaN`.
+Because there are no compile-time types, the shapes the backend returns are
+documented as **JSDoc typedefs** at the top of
+[`src/lib/api.js`](frontend/src/lib/api.js). Editors read these for
+autocomplete, and they keep the frontend's expectations written down next to
+the calls that rely on them — useful because nothing else now checks that the
+frontend and the Pydantic schemas agree.
 
-TypeScript's job is to make a whole class of mistakes impossible to ship. It
-does nothing at runtime — it is erased during the build.
-
-### `type` vs `interface`
-
-Both describe object shapes. This project uses `type` everywhere for
-consistency and because it also handles unions, which `interface` cannot.
-Use `interface` when you need declaration merging (rare in app code).
-
-### Union types — `lib/api.ts`
-
-```ts
-skill_match: number | null
-```
-
-"A number **or** null, nothing else." This mirrors the backend exactly: the
-skill component is `null` when the job description names no recognised skills.
-TypeScript then forces you to handle the null case before using the value —
-which is why `ScoreCard` renders `n/a` instead of crashing.
-
-```ts
-export type Theme = 'light' | 'dark'   // lib/theme.tsx
-```
-
-A union of *literal values*. `setTheme('drak')` is a compile error, so a typo
-cannot silently break the toggle.
-
-### Generics — `lib/api.ts`
-
-```ts
-api.post<TokenResponse>('/auth/login', { email, password }).then((r) => r.data)
-```
-
-The `<TokenResponse>` tells Axios what shape the response body has. Without it,
-`r.data` is `any` and you get no checking at all. With it, `data.user.emial`
-is a compile error.
-
-Read `<T>` as "a type I supply at the call site" — the same function works for
-any response shape, and the caller decides which.
-
-### Intersection types — `lib/api.ts`
-
-```ts
-export type ResumeDetail = ResumeSummary & { extracted_text: string }
-```
-
-`&` means "everything in `ResumeSummary`, **plus** this". It mirrors the
-backend's Pydantic inheritance (`class ResumeDetail(ResumeSummary)`), so the
-list and detail shapes can never drift apart.
-
-### `Record<K, V>` — `lib/api.ts`
-
-```ts
-sections: Record<string, boolean>
-```
-
-An object with string keys and boolean values, where the keys are not known in
-advance — exactly what `detect_sections()` returns.
-
-### Optional properties — `components/AnalysisReport.tsx`
-
-```ts
-divider?: boolean
-```
-
-The `?` means the prop may be omitted. `/analyze` passes `divider`; `/results/:id`
-does not, and both compile.
-
-### Typed context — `lib/auth.tsx`
-
-```ts
-const AuthContext = createContext<AuthContextValue | null>(null)
-```
-
-`null` is the value before a provider exists. That is why `useAuth()` throws if
-the context is null — the union forces you to handle the "no provider" case
-instead of discovering it as a runtime crash.
-
-### `import type` — `components/SkillBadges.tsx`
-
-```ts
-import type { ExtractedSkill } from '@/lib/api'
-```
-
-Imports only the type, never any runtime code. The bundler strips the line
-entirely, so importing a type cannot accidentally pull a module into your
-bundle.
-
-### The `!` non-null assertion — `main.tsx`
-
-```ts
-createRoot(document.getElementById('root')!)
-```
-
-`getElementById` returns `HTMLElement | null`. The `!` says "I know this is not
-null." It is an escape hatch — you are overriding the checker, so it is only
-safe here because `index.html` guarantees `<div id="root">` exists. Reach for it
-rarely; every `!` is a place TypeScript can no longer help you.
-
-
----
+The practical consequence: renaming a field on the backend will not fail the
+build. It will render `undefined` in the browser instead. When you change an
+API response shape, grep the frontend for the old field name.
 
 ## Security notes
 

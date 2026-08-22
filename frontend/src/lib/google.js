@@ -18,25 +18,25 @@ const STATE_KEY = 'resumeiq-oauth-state'
  * session to the attacker's Google account. Binding a random value to this
  * browser tab and checking it on return makes that forgery detectable.
  */
-function createState(): string {
+function createState() {
   const bytes = crypto.getRandomValues(new Uint8Array(16))
   const state = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
   sessionStorage.setItem(STATE_KEY, state)
   return state
 }
-
-export function consumeState(): string | null {
+export function consumeState() {
   const state = sessionStorage.getItem(STATE_KEY)
   sessionStorage.removeItem(STATE_KEY) // one-time use
   return state
 }
-
-export function redirectToGoogle(clientId: string, redirectUri: string): void {
+export function redirectToGoogle(clientId, redirectUri) {
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
-    response_type: 'code', // the authorization CODE flow, not the implicit flow
-    scope: 'openid email profile', // the minimum we need to identify the user
+    response_type: 'code',
+    // the authorization CODE flow, not the implicit flow
+    scope: 'openid email profile',
+    // the minimum we need to identify the user
     state: createState(),
     prompt: 'select_account',
   })

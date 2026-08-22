@@ -1,7 +1,5 @@
-import type { ExtractedSkill } from '@/lib/api'
-
 /** Groups skills by category and renders them as badges. */
-export function SkillBadges({ skills }: { skills: ExtractedSkill[] }) {
+export function SkillBadges({ skills }) {
   if (skills.length === 0) {
     return (
       <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -9,12 +7,10 @@ export function SkillBadges({ skills }: { skills: ExtractedSkill[] }) {
       </p>
     )
   }
-
-  const byCategory = new Map<string, string[]>()
+  const byCategory = new Map()
   for (const s of skills) {
     byCategory.set(s.category, [...(byCategory.get(s.category) ?? []), s.name])
   }
-
   return (
     <div className="space-y-4">
       {[...byCategory].map(([category, names]) => (

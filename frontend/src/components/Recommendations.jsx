@@ -1,16 +1,26 @@
-const STYLES: Record<string, { label: string; className: string }> = {
-  skills: { label: 'Skills', className: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300' },
-  keywords: { label: 'Keywords', className: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300' },
-  structure: { label: 'Structure', className: 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300' },
-  content: { label: 'Content', className: 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300' },
-  positive: { label: 'Good', className: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' },
+const STYLES = {
+  skills: {
+    label: 'Skills',
+    className: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300',
+  },
+  keywords: {
+    label: 'Keywords',
+    className: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
+  },
+  structure: {
+    label: 'Structure',
+    className: 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300',
+  },
+  content: {
+    label: 'Content',
+    className: 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300',
+  },
+  positive: {
+    label: 'Good',
+    className: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
+  },
 }
-
-export function Recommendations({
-  items,
-}: {
-  items: { category: string; message: string }[]
-}) {
+export function Recommendations({ items }) {
   if (items.length === 0) {
     return (
       <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -18,7 +28,6 @@ export function Recommendations({
       </p>
     )
   }
-
   return (
     <ul className="space-y-3">
       {items.map((item, i) => {

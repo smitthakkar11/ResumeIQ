@@ -1,18 +1,14 @@
-type State = 'loading' | 'ok' | 'error'
-
-const DOT: Record<State, string> = {
+const DOT = {
   loading: 'bg-slate-400 animate-pulse',
   ok: 'bg-emerald-500',
   error: 'bg-rose-500',
 }
-
-const LABEL: Record<State, string> = {
+const LABEL = {
   loading: 'text-slate-500 dark:text-slate-400',
   ok: 'text-emerald-600 dark:text-emerald-400',
   error: 'text-rose-600 dark:text-rose-400',
 }
-
-export function StatusRow({ label, state, detail }: { label: string; state: State; detail: string }) {
+export function StatusRow({ label, state, detail }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-slate-100 py-3 last:border-0 dark:border-slate-800">
       <div className="flex items-center gap-3">
@@ -23,5 +19,3 @@ export function StatusRow({ label, state, detail }: { label: string; state: Stat
     </div>
   )
 }
-
-export type { State as StatusState }
