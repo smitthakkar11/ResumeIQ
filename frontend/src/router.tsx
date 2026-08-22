@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { Layout } from '@/components/Layout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { Analyze } from '@/pages/Analyze'
 import { Dashboard } from '@/pages/Dashboard'
 import { Landing } from '@/pages/Landing'
 import { Login } from '@/pages/Login'
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'dashboard', element: <Dashboard /> },
           { path: 'resume/upload', element: <ResumeUpload /> },
+          { path: 'analyze', element: <Analyze /> },
         ],
       },
       { path: '*', element: <NotFound /> },

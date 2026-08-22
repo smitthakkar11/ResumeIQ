@@ -153,6 +153,32 @@ export const resumeApi = {
   remove: (id: number) => api.delete(`/resumes/${id}`).then(() => undefined),
 }
 
+export type AnalysisResponse = {
+  resume_id: number
+  resume_filename: string
+  job_title: string
+  overall_score: number
+  text_similarity: number
+  skill_match: number | null
+  keyword_match: number
+  weights: Record<string, number>
+  matched_skills: ExtractedSkill[]
+  missing_skills: ExtractedSkill[]
+  extra_skills: ExtractedSkill[]
+  keywords: { term: string; found: boolean }[]
+}
+
+export const analysisApi = {
+  create: (resumeId: number, jobTitle: string, jobDescription: string) =>
+    api
+      .post<AnalysisResponse>('/analyses', {
+        resume_id: resumeId,
+        job_title: jobTitle,
+        job_description: jobDescription,
+      })
+      .then((r) => r.data),
+}
+
 export const fetchHealth = () => api.get<HealthResponse>('/health').then((r) => r.data)
 export const fetchDatabaseHealth = () =>
   api.get<DatabaseHealthResponse>('/health/db').then((r) => r.data)

@@ -10,6 +10,8 @@ import re
 import spacy
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
+from app.services.nlp.skill_extractor import protected_terms
+
 # Treat + # . - as word-INTERNAL characters so technical terms survive.
 # A plain \w+ tokenizer turns "C++" into "C" and ".NET" into "NET".
 #   \.?              optional leading dot     -> .net
@@ -45,9 +47,11 @@ def lemmatize(tokens: list[str]) -> list[str]:
     """Reduce words to their dictionary form: studies -> study, was -> be.
 
     Tokens containing symbols (c++, node.js) are passed through untouched —
-    spaCy would try to re-tokenize them and we would lose the term.
+    spaCy would try to re-tokenize them and we would lose the term. Known
+    skill words are protected too, or "kubernetes" becomes "kubernete".
     """
-    plain = [t for t in tokens if t.isalpha()]
+    keep = protected_terms()
+    plain = [t for t in tokens if t.isalpha() and t not in keep]
     if not plain:
         return list(tokens)
 

@@ -53,6 +53,12 @@ class Settings(BaseSettings):
     def google_oauth_configured(self) -> bool:
         return bool(self.GOOGLE_CLIENT_ID and self.GOOGLE_CLIENT_SECRET)
 
+    # --- Match score weights (must sum to 1.0) ---
+    TEXT_SIMILARITY_WEIGHT: float = 0.4
+    SKILL_MATCH_WEIGHT: float = 0.4
+    KEYWORD_MATCH_WEIGHT: float = 0.2
+    TOP_KEYWORDS: int = 15
+
     # --- CORS ---
     # Kept as a plain string on purpose: Pydantic tries to JSON-decode env vars
     # typed as `list`, which chokes on "a,b". We split it ourselves below.

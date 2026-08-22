@@ -65,3 +65,21 @@ def count_skills(text: str) -> dict[str, int]:
         if found:
             counts[skill.name] = found
     return counts
+
+
+@functools.lru_cache(maxsize=1)
+def protected_terms() -> frozenset[str]:
+    """Single-word skill spellings that must survive lemmatization intact.
+
+    spaCy turns "kubernetes" into "kubernete" (it looks like a plural) and
+    "pandas" into "panda". Both sides of a comparison are mangled the same way
+    so matching still works, but the terms are then unusable in the UI.
+    """
+    entries = json.loads(SKILLS_FILE.read_text())["skills"]
+    words = set()
+    for entry in entries:
+        for term in [entry["name"], *entry["aliases"]]:
+            term = term.lower()
+            if " " not in term:
+                words.add(term)
+    return frozenset(words)

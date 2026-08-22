@@ -4,7 +4,7 @@ Transparent resume ↔ job description compatibility analysis, built with classi
 NLP — TF-IDF, cosine similarity and explicit skill matching. **No LLM, no external
 AI API.** Every number in the final score can be traced back to the source text.
 
-> **Status:** Phase 4 of 10 complete (NLP: preprocessing & skill extraction).
+> **Status:** Phase 5 of 10 complete (Matching engine).
 
 ---
 
@@ -154,10 +154,55 @@ cd frontend && npm run build
 | `GET` | `/api/resumes/{id}` | Bearer | one resume with its text |
 | `GET` | `/api/resumes/{id}/skills` | Bearer | skills detected in a resume |
 | `DELETE` | `/api/resumes/{id}` | Bearer | delete a resume |
+| `POST` | `/api/analyses` | Bearer | score a resume against a job description |
 
 Job and analysis endpoints arrive in Phases 4–5. Every resume endpoint filters
 by `user_id` inside the query, and returns **404** (not 403) for someone else's
 resume, so it never confirms that another user's data exists.
+
+### Matching engine
+
+```
+Overall = 0.40 x Text similarity   (TF-IDF cosine)
+        + 0.40 x Skill match       (matched required / total required)
+        + 0.20 x Keyword match     (top job-description terms found in resume)
+```
+
+Weights are set in `.env` (`TEXT_SIMILARITY_WEIGHT`, `SKILL_MATCH_WEIGHT`,
+`KEYWORD_MATCH_WEIGHT`) and must sum to 1.0. Every component is returned
+separately, so a user can see which part is weak.
+
+**Text similarity** — both documents are preprocessed, vectorised with
+`TfidfVectorizer`, and compared with `cosine_similarity`. sklearn L2-normalises
+each row, so both vectors have length 1 and the cosine reduces to a dot
+product. Cosine is used rather than Euclidean distance because it measures the
+**angle** between vectors: a two-page resume and a five-line job posting differ
+enormously in magnitude but that is a length difference, not a mismatch.
+
+**Skill match** — `matched required skills / total required skills`. Skills the
+candidate has that the job never asked for are reported as "extra" but earn no
+points.
+
+**Keyword match** — the top-N terms of the job description (N configurable),
+checked for presence in the resume. Job-posting boilerplate (`experience`,
+`plus`, `knowledge`, `team`, `responsibility`…) is filtered out first — a
+domain-specific stop list, since no resume should be penalised for lacking
+those words.
+
+**If the job description names no skills we recognise**, the skill component is
+*dropped* and the remaining weights are rescaled, rather than scored as 0.
+We did not measure it; reporting 0 would be misleading.
+
+#### Honest limitations
+
+- **No semantics.** "ML" and "machine learning" are different dimensions.
+- **No word order.** It is a bag of words.
+- **IDF is weak with two documents.** With n=2, `df` is only ever 1 or 2, so
+  idf takes just two values and terms shared by both documents get the *lower*
+  weight. Real IDF needs a corpus of job descriptions. Consequently raw text
+  similarity runs low (often 10–40%) and is most meaningful **comparatively** —
+  resume A vs resume B for the same job — rather than as an absolute number.
+- **Keyword stuffing defeats it**, as it defeats any purely lexical method.
 
 ### NLP preprocessing
 
@@ -246,7 +291,7 @@ simply does not render, and `POST /api/auth/google` returns 503.
 | 2 | Auth: JWT, password hashing, Google Sign-In | ✅ Done |
 | 3 | Resume upload + PDF text extraction | ✅ Done |
 | 4 | NLP: preprocessing, skill dictionary, extraction | ✅ Done |
-| 5 | Matching engine: TF-IDF, cosine similarity, scoring | ⬜ |
+| 5 | Matching engine: TF-IDF, cosine similarity, scoring | ✅ Done |
 | 6 | Results dashboard + charts | ⬜ |
 | 7 | User history + resume versioning | ⬜ |
 | 8 | *Optional* supervised classifier — only with a real dataset | ⬜ |
