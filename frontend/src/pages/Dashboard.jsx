@@ -1,130 +1,99 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ScorePill } from '@/components/ScorePill'
-import { analysisApi } from '@/lib/api'
+import { SectionHead } from '@/components/ui'
+import { analysisApi, resumeApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 
-/**
- * Placeholder dashboard. Phase 3 fills this with resume upload; Phase 7 adds
- * the analysis history. For now it proves the protected route and the
- * authenticated /auth/me call work.
- */
 export function Dashboard() {
   const { user } = useAuth()
   const [recent, setRecent] = useState([])
+  const [resumeCount, setResumeCount] = useState(null)
+
   useEffect(() => {
-    analysisApi
-      .list()
-      .then((all) => setRecent(all.slice(0, 5)))
-      .catch(() => setRecent([]))
+    analysisApi.list().then((all) => setRecent(all)).catch(() => setRecent([]))
+    resumeApi.list().then((r) => setResumeCount(r.length)).catch(() => setResumeCount(0))
   }, [])
+
   if (!user) return null
-  const NEXT = [
-    {
-      phase: 'Phase 8',
-      title: 'Supervised model',
-      note: 'only with a real dataset',
-    },
-    {
-      phase: 'Phase 9',
-      title: 'Semantic similarity',
-      note: 'local sentence embeddings',
-    },
-    {
-      phase: 'Phase 10',
-      title: 'Deployment',
-      note: 'Docker, security, docs',
-    },
+
+  const best = recent.length ? Math.max(...recent.map((a) => a.match_score)) : null
+
+  const STATS = [
+    ['Resumes', resumeCount ?? '—'],
+    ['Analyses', recent.length],
+    ['Best match', best === null ? '—' : `${best}%`],
   ]
+
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Hello, {user.name.split(' ')[0]}</h1>
-        <p className="mt-1.5 text-slate-600 dark:text-slate-400">
-          You&apos;re signed in as {user.email}.
-        </p>
+    <div className="space-y-14">
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <span className="label">Signed in as {user.email}</span>
+          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">
+            {user.name.split(' ')[0]}
+          </h1>
+        </div>
+        <Link
+          to="/analyze"
+          className="rounded-xs bg-acid-400 px-5 py-3 font-mono text-[11px] font-medium uppercase
+                     tracking-[0.12em] text-ink-950 transition-colors hover:bg-acid-300"
+        >
+          New analysis
+        </Link>
       </div>
 
-      <Link
-        to="/resume/upload"
-        className="surface flex max-w-md items-center justify-between gap-4 p-5 transition hover:border-brand-400 dark:hover:border-brand-500/50"
-      >
-        <span>
-          <span className="block font-medium">Upload a resume</span>
-          <span className="block text-sm text-slate-500 dark:text-slate-400">
-            PDF text extraction with PyMuPDF
-          </span>
-        </span>
-        <span aria-hidden className="text-brand-600 dark:text-brand-400">
-          &rarr;
-        </span>
-      </Link>
+      {/* ---- counters ---- */}
+      <div className="grid gap-px bg-paper-line sm:grid-cols-3 dark:bg-ink-800">
+        {STATS.map(([label, value]) => (
+          <div key={label} className="bg-paper px-5 py-6 dark:bg-ink-950">
+            <span className="label">{label}</span>
+            <p className="num mt-2 text-4xl font-medium">{value}</p>
+          </div>
+        ))}
+      </div>
 
-      <section className="surface max-w-md p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Account
-        </h2>
-        <dl className="mt-4 space-y-2.5 text-sm">
-          {[
-            ['Name', user.name],
-            ['Email', user.email],
-            ['Sign-in method', user.has_password ? 'Email and password' : 'Google'],
-            ['Member since', new Date(user.created_at).toLocaleDateString()],
-          ].map(([label, value]) => (
-            <div key={label} className="flex justify-between gap-4">
-              <dt className="text-slate-500 dark:text-slate-400">{label}</dt>
-              <dd className="font-medium">{value}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
+      {/* ---- recent ---- */}
       <section>
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Recent analyses
-          </h2>
-          {recent.length > 0 && (
-            <Link
-              to="/history"
-              className="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400"
-            >
-              View all
-            </Link>
-          )}
-        </div>
+        <SectionHead
+          right={
+            recent.length > 0 && (
+              <Link to="/history" className="label transition-colors hover:text-acid-600 dark:hover:text-acid-400">
+                View all →
+              </Link>
+            )
+          }
+        >
+          Recent analyses
+        </SectionHead>
 
         {recent.length === 0 ? (
-          <div className="surface mt-4 p-6 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              No analyses yet.{' '}
-              <Link
-                to="/analyze"
-                className="font-medium text-brand-600 hover:underline dark:text-brand-400"
-              >
-                Run one
-              </Link>
-              .
+          <div className="panel px-6 py-12 text-center">
+            <p className="text-sm text-ink-500 dark:text-ink-400">
+              Nothing analysed yet.
             </p>
+            <Link
+              to="/resume/upload"
+              className="mt-4 inline-block font-mono text-[11px] uppercase tracking-[0.12em]
+                         text-acid-600 hover:underline dark:text-acid-400"
+            >
+              Upload a resume →
+            </Link>
           </div>
         ) : (
-          <ul className="mt-4 space-y-2">
-            {recent.map((a) => (
+          <ul className="divide-y divide-paper-line dark:divide-ink-800">
+            {recent.slice(0, 5).map((a) => (
               <li key={a.id}>
                 <Link
                   to={`/results/${a.id}`}
-                  className="surface flex items-center justify-between gap-4 p-4 transition hover:border-brand-400 dark:hover:border-brand-500/50"
+                  className="group flex items-center gap-4 py-3.5 transition-colors"
                 >
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium">
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium transition-colors group-hover:text-acid-600 dark:group-hover:text-acid-400">
                       {a.job_title || 'Untitled role'}
                     </span>
-                    <span className="block truncate text-xs text-slate-500 dark:text-slate-400">
-                      {a.resume_filename} ·{' '}
-                      {new Date(a.created_at).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
+                    <span className="num mt-0.5 block truncate text-[11px] text-ink-400 dark:text-ink-600">
+                      {a.resume_filename} · {new Date(a.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </span>
                   </span>
                   <ScorePill score={a.match_score} />
@@ -133,21 +102,6 @@ export function Dashboard() {
             ))}
           </ul>
         )}
-      </section>
-
-      <section>
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Coming next
-        </h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          {NEXT.map(({ phase, title, note }) => (
-            <div key={phase} className="surface p-4 opacity-70">
-              <span className="font-mono text-xs text-brand-600 dark:text-brand-400">{phase}</span>
-              <p className="mt-1.5 font-medium">{title}</p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{note}</p>
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   )

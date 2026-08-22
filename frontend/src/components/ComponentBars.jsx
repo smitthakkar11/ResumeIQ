@@ -1,75 +1,39 @@
-import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts'
-const COLOURS = ['#6366f1', '#8b5cf6', '#a78bfa']
-
 /**
- * The three score components side by side. This is the point of a transparent
- * score: you can see which part is dragging the total down.
+ * The three score components as labelled rows.
+ *
+ * The point of a transparent score is seeing which part drags it down, so the
+ * weight is printed next to each figure rather than hidden in a tooltip.
  */
 export function ComponentBars({ result }) {
-  const data = [
-    {
-      name: 'Text similarity',
-      value: result.text_similarity,
-      weight: result.weights.text_similarity,
-    },
-    {
-      name: 'Skill match',
-      value: result.skill_match ?? 0,
-      weight: result.weights.skill_match,
-    },
-    {
-      name: 'Keyword match',
-      value: result.keyword_match,
-      weight: result.weights.keyword_match,
-    },
-  ].filter((d) => d.weight !== undefined)
-  return (
-    <div className="h-44 w-full">
-      <ResponsiveContainer>
-        <BarChart
-          data={data}
-          layout="vertical"
-          margin={{
-            left: 0,
-            right: 44,
-            top: 4,
-            bottom: 4,
-          }}
-        >
-          <XAxis type="number" domain={[0, 100]} hide />
-          <YAxis
-            type="category"
-            dataKey="name"
-            width={110}
-            axisLine={false}
-            tickLine={false}
-            tick={{
-              fontSize: 12,
-              fill: 'currentColor',
-            }}
-            className="text-slate-600 dark:text-slate-400"
-          />
-          <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={20}>
-            {data.map((entry, i) => (
-              <Cell key={entry.name} fill={COLOURS[i % COLOURS.length]} />
-            ))}
-            <LabelList
-              dataKey="value"
-              position="right"
-              formatter={(v) => `${v ?? 0}%`}
-              className="fill-slate-700 dark:fill-slate-300"
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-              }}
-            />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+  const rows = [
+    { key: 'text_similarity', label: 'Text similarity', value: result.text_similarity },
+    { key: 'skill_match', label: 'Skill match', value: result.skill_match ?? 0 },
+    { key: 'keyword_match', label: 'Keyword match', value: result.keyword_match },
+  ].filter((r) => result.weights[r.key] !== undefined)
 
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-500">
-        {data.map((d) => `${d.name} x${d.weight}`).join('  ·  ')}
-      </p>
+  return (
+    <div className="divide-y divide-paper-line dark:divide-ink-800">
+      {rows.map((row) => (
+        <div key={row.key} className="grid grid-cols-[7.5rem_1fr_auto] items-center gap-4 py-3.5">
+          <span className="label !normal-case !tracking-normal !text-[11px] text-ink-500 dark:text-ink-400">
+            {row.label}
+          </span>
+
+          <span className="relative h-[6px] bg-paper-line dark:bg-ink-800">
+            <span
+              className="absolute inset-y-0 left-0 bg-ink-950 dark:bg-ink-100"
+              style={{ width: `${Math.min(row.value, 100)}%`, transition: 'width 500ms cubic-bezier(.2,.8,.2,1)' }}
+            />
+          </span>
+
+          <span className="flex items-baseline gap-2">
+            <span className="num w-14 text-right text-sm font-medium">{row.value}%</span>
+            <span className="num w-9 text-right text-[10px] text-ink-400 dark:text-ink-600">
+              ×{result.weights[row.key]}
+            </span>
+          </span>
+        </div>
+      ))}
     </div>
   )
 }

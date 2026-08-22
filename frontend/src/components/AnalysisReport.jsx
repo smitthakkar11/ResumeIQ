@@ -1,100 +1,113 @@
 import { ComponentBars } from '@/components/ComponentBars'
 import { Recommendations } from '@/components/Recommendations'
-import { ScoreGauge } from '@/components/ScoreGauge'
+import { ScoreMeter } from '@/components/ScoreMeter'
 import { SectionChecklist } from '@/components/SectionChecklist'
 import { SemanticComparison } from '@/components/SemanticComparison'
 import { SkillBadges } from '@/components/SkillBadges'
+import { SectionHead } from '@/components/ui'
+
 /** The full results view. Shared by /analyze and /results/:id. */
 export function AnalysisReport({ result, divider = false }) {
+  const hasSemantic =
+    result.semantic_similarity !== null && result.semantic_similarity !== undefined
+
   return (
-    <div
-      className={`space-y-6 ${divider ? 'border-t border-slate-200 pt-8 dark:border-slate-800' : ''}`}
-    >
-      <h2 className="text-xl font-semibold tracking-tight">
-        {result.job_title || 'Results'}
-        <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
+    <div className={divider ? 'rule pt-10' : ''}>
+      <div className="mb-8 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="font-display text-2xl font-bold tracking-tight">
+          {result.job_title || 'Results'}
+        </h2>
+        <span className="num text-[11px] text-ink-400 dark:text-ink-600">
           {result.resume_filename}
         </span>
-      </h2>
+      </div>
 
-      {/* ---- score overview ---- */}
-      <div className="grid gap-4 lg:grid-cols-5">
-        <div className="surface p-5 lg:col-span-2">
-          <ScoreGauge score={result.match_score} />
-        </div>
-        <div className="surface p-5 lg:col-span-3">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Score breakdown
-          </h3>
-          <ComponentBars result={result} />
+      {/* ---- the readout: score left, breakdown right ---- */}
+      <div className="panel grid gap-10 p-6 lg:grid-cols-[1.1fr_1fr] lg:p-8">
+        <ScoreMeter score={result.match_score} />
+        <div className="lg:border-l lg:border-paper-line lg:pl-10 dark:lg:border-ink-800">
+          <span className="label">Breakdown</span>
+          <div className="mt-3">
+            <ComponentBars result={result} />
+          </div>
+          <p className="mt-4 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+            Each part is weighted and combined into the overall figure.
+          </p>
         </div>
       </div>
 
-      {/* ---- TF-IDF vs embeddings (only when the optional model ran) ---- */}
-      {result.semantic_similarity !== null && result.semantic_similarity !== undefined && (
-        <SemanticComparison result={result} />
+      {hasSemantic && (
+        <div className="mt-10">
+          <SemanticComparison result={result} />
+        </div>
       )}
 
       {/* ---- skills ---- */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="surface p-5">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Matched skills ({result.matched_skills.length})
-          </h3>
-          <SkillBadges skills={result.matched_skills} />
+      <div className="mt-12 grid gap-10 lg:grid-cols-2">
+        <section>
+          <SectionHead
+            right={<span className="num text-xs text-ink-400">{result.matched_skills.length}</span>}
+          >
+            Matched skills
+          </SectionHead>
+          <SkillBadges skills={result.matched_skills} tone="matched" />
         </section>
 
-        <section className="surface p-5">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            Missing skills ({result.missing_skills.length})
-          </h3>
+        <section>
+          <SectionHead
+            right={<span className="num text-xs text-ink-400">{result.missing_skills.length}</span>}
+          >
+            Missing skills
+          </SectionHead>
           {result.missing_skills.length === 0 ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-ink-500 dark:text-ink-400">
               Nothing missing — the resume names every skill the job asked for.
             </p>
           ) : (
-            <SkillBadges skills={result.missing_skills} />
+            <SkillBadges skills={result.missing_skills} tone="missing" />
           )}
         </section>
       </div>
 
-      {/* ---- keywords + structure ---- */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="surface p-5">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Important keywords
-          </h3>
-          <div className="flex flex-wrap gap-1.5">
-            {result.keywords.map((k) => (
-              <span
-                key={k.term}
-                className={`rounded-md px-2 py-1 font-mono text-xs ${k.found ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'}`}
-              >
-                {k.found ? '✓' : '✗'} {k.term}
-              </span>
-            ))}
-          </div>
-        </section>
+      {/* ---- keywords ---- */}
+      <section className="mt-12">
+        <SectionHead
+          right={
+            <span className="num text-xs text-ink-400">
+              {result.keywords.filter((k) => k.found).length}/{result.keywords.length} found
+            </span>
+          }
+        >
+          Keywords from the job post
+        </SectionHead>
+        <div className="flex flex-wrap gap-1.5">
+          {result.keywords.map((k) => (
+            <span
+              key={k.term}
+              className={`rounded-xs border px-2 py-1 font-mono text-[11px] ${
+                k.found
+                  ? 'border-acid-500/40 bg-acid-400/10 text-acid-700 dark:text-acid-300'
+                  : 'border-paper-line text-ink-500 line-through decoration-alert dark:border-ink-700 dark:text-ink-400'
+              }`}
+            >
+              {k.term}
+            </span>
+          ))}
+        </div>
+      </section>
 
-        <section className="surface p-5">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Resume structure
-          </h3>
+      {/* ---- structure + recommendations ---- */}
+      <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.6fr]">
+        <section>
+          <SectionHead>Resume structure</SectionHead>
           <SectionChecklist sections={result.sections} />
         </section>
-      </div>
 
-      {/* ---- recommendations ---- */}
-      <section className="surface p-5">
-        <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Recommendations
-        </h3>
-        <Recommendations items={result.recommendations} />
-        <p className="mt-5 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500">
-          Generated by deterministic rules, not a language model. The same resume and posting always
-          produce the same suggestions.
-        </p>
-      </section>
+        <section>
+          <SectionHead>Recommendations</SectionHead>
+          <Recommendations items={result.recommendations} />
+        </section>
+      </div>
     </div>
   )
 }

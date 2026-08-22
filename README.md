@@ -29,7 +29,7 @@ keywords from the job description never appear in the resume.
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, JavaScript, Tailwind CSS v4, React Router, Axios, Recharts |
+| Frontend | React 19, Vite, JavaScript, Tailwind CSS v4, React Router, Axios |
 | Semantic *(optional)* | sentence-transformers, `all-MiniLM-L6-v2`, run locally |
 | Backend | Python 3.11, FastAPI, Pydantic v2 |
 | Database | MySQL 9, SQLAlchemy 2, Alembic |
@@ -488,6 +488,23 @@ Fabricating a dataset or its metrics was not an option. The classical NLP
 pipeline here is a complete, working system on its own.
 
 ## Frontend notes
+
+The interface is deliberately built to read as an instrument rather than a
+generic dashboard: near-black canvas, one acid accent used sparingly, hairline
+rules instead of shadows, square corners, and **every figure set in monospace**
+so numbers align and scan as measurements. Three typefaces do three jobs —
+Space Grotesk states, Inter explains, JetBrains Mono measures.
+
+The score meter and the component bars are hand-built from `div`s rather than
+drawn by a chart library. Forty discrete segments read as a measured quantity
+where a smooth arc reads as decoration — and it removed Recharts (≈340 kB, half
+the bundle) along with its default styling.
+
+> **Deviation from the original spec:** Recharts was listed in the stack and was
+> used in Phases 6-9. It is now removed, because both visualisations are simple
+> enough to build directly and the library's defaults were the main source of
+> the generic look.
+
 
 Plain JavaScript, no TypeScript build step — `npm run build` is just
 `vite build`.

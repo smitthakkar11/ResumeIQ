@@ -1,61 +1,60 @@
 /**
- * TF-IDF similarity next to sentence-embedding similarity.
+ * Word-overlap score against meaning-based score.
  *
- * Shown for comparison only. The embedding score is deliberately not part of
- * the overall match: it cannot be traced back to specific words, and folding
- * it in would make the score unexplainable.
+ * Shown for comparison only — the meaning score is not part of the overall
+ * match, because it cannot be traced back to specific words.
  */
 export function SemanticComparison({ result }) {
   const rows = [
     {
-      label: 'TF-IDF (word overlap)',
+      label: 'Word overlap',
       value: result.text_similarity,
-      note: 'Counts shared words. Cannot see that "ML" and "machine learning" mean the same thing.',
-      bar: 'bg-brand-500',
+      note: 'How much of the posting’s actual vocabulary appears in your resume.',
+      fill: 'bg-ink-950 dark:bg-ink-100',
     },
     {
-      label: 'Embeddings (meaning)',
+      label: 'Meaning',
       value: result.semantic_similarity,
-      note: 'A local neural model compares meaning, so paraphrases still match. Not traceable to specific words.',
-      bar: 'bg-teal-500',
+      note: 'Whether you describe the same work, even in different words.',
+      fill: 'bg-acid-400',
     },
   ]
 
   const gap = Math.round((result.semantic_similarity - result.text_similarity) * 10) / 10
 
   return (
-    <section className="surface p-5">
-      <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-        Two ways of measuring similarity
-      </h3>
+    <section>
+      <div className="rule mb-5 pt-4">
+        <h3 className="label">Wording vs meaning</h3>
+      </div>
 
-      <div className="mt-4 space-y-4">
+      <div className="grid gap-8 sm:grid-cols-2">
         {rows.map((row) => (
           <div key={row.label}>
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="text-sm font-medium">{row.label}</span>
-              <span className="text-sm font-semibold tabular-nums">{row.value}%</span>
+            <div className="flex items-baseline gap-2">
+              <span className="num text-4xl font-medium">{row.value}</span>
+              <span className="num text-sm text-ink-400">%</span>
+              <span className="ml-auto label">{row.label}</span>
             </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-              <div
-                className={`h-full rounded-full ${row.bar}`}
-                style={{ width: `${Math.min(row.value, 100)}%` }}
+            <span className="mt-2 block h-[6px] bg-paper-line dark:bg-ink-800">
+              <span
+                className={`block h-full ${row.fill}`}
+                style={{ width: `${Math.min(row.value, 100)}%`, transition: 'width 600ms cubic-bezier(.2,.8,.2,1)' }}
               />
-            </div>
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-500">{row.note}</p>
+            </span>
+            <p className="mt-2.5 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+              {row.note}
+            </p>
           </div>
         ))}
       </div>
 
-      <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-500">
+      <p className="mt-6 border-l-2 border-acid-400 pl-4 text-[11px] leading-relaxed text-ink-500 dark:text-ink-400">
         {gap > 5
-          ? `The embedding model rates this ${gap} points higher — it is recognising wording that means the same thing but shares no words.`
+          ? `You describe this work well, but in different words than the posting uses — worth borrowing their phrasing where it is honest.`
           : gap < -5
-            ? `TF-IDF rates this ${Math.abs(gap)} points higher — the two documents share vocabulary without describing the same work.`
-            : 'Both methods agree closely on this pair.'}{' '}
-        Only the TF-IDF score counts toward the overall match, so every point
-        remains traceable to specific words. The model runs locally; nothing is
-        sent anywhere.
+            ? `You share the posting’s vocabulary without describing the same work — worth checking the substance matches.`
+            : 'Wording and substance line up closely here.'}
       </p>
     </section>
   )

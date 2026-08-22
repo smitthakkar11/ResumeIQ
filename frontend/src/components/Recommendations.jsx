@@ -1,50 +1,36 @@
-const STYLES = {
-  skills: {
-    label: 'Skills',
-    className: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300',
-  },
-  keywords: {
-    label: 'Keywords',
-    className: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300',
-  },
-  structure: {
-    label: 'Structure',
-    className: 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300',
-  },
-  content: {
-    label: 'Content',
-    className: 'bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300',
-  },
-  positive: {
-    label: 'Good',
-    className: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300',
-  },
+const LABELS = {
+  skills: { text: 'SKILL', className: 'text-alert' },
+  keywords: { text: 'KEYWD', className: 'text-warn' },
+  structure: { text: 'STRUCT', className: 'text-ink-400 dark:text-ink-500' },
+  content: { text: 'CONTENT', className: 'text-ink-400 dark:text-ink-500' },
+  positive: { text: 'OK', className: 'text-acid-600 dark:text-acid-400' },
 }
+
 export function Recommendations({ items }) {
   if (items.length === 0) {
     return (
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-ink-500 dark:text-ink-400">
         No suggestions — this resume matches the posting well.
       </p>
     )
   }
+
   return (
-    <ul className="space-y-3">
+    <ol className="divide-y divide-paper-line dark:divide-ink-800">
       {items.map((item, i) => {
-        const style = STYLES[item.category] ?? STYLES.content
+        const tag = LABELS[item.category] ?? LABELS.content
         return (
-          <li key={i} className="flex gap-3">
-            <span
-              className={`mt-0.5 h-fit shrink-0 rounded-md px-2 py-0.5 text-[11px] font-medium ${style.className}`}
-            >
-              {style.label}
+          <li key={i} className="grid grid-cols-[2rem_4.5rem_1fr] gap-3 py-4">
+            <span className="num text-[11px] text-ink-300 dark:text-ink-700">
+              {String(i + 1).padStart(2, '0')}
             </span>
-            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-              {item.message}
-            </p>
+            <span className={`num text-[10px] tracking-[0.12em] pt-px ${tag.className}`}>
+              {tag.text}
+            </span>
+            <p className="text-sm leading-relaxed text-ink-700 dark:text-ink-300">{item.message}</p>
           </li>
         )
       })}
-    </ul>
+    </ol>
   )
 }

@@ -21,9 +21,9 @@ export function GoogleButton({ disabled }) {
   return (
     <>
       <div className="flex items-center gap-3 py-1">
-        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-        <span className="text-xs text-slate-400 dark:text-slate-600">or</span>
-        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        <span className="h-px flex-1 bg-paper-line dark:bg-ink-800" />
+        <span className="label">or</span>
+        <span className="h-px flex-1 bg-paper-line dark:bg-ink-800" />
       </div>
 
       <Button

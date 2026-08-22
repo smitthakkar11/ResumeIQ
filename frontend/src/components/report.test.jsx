@@ -4,6 +4,7 @@ import { SkillBadges } from '@/components/SkillBadges'
 import { SectionChecklist } from '@/components/SectionChecklist'
 import { Recommendations } from '@/components/Recommendations'
 import { ScorePill } from '@/components/ScorePill'
+import { band } from '@/lib/score'
 
 describe('SkillBadges', () => {
   it('groups skills under their category', () => {
@@ -53,8 +54,8 @@ describe('Recommendations', () => {
         ]}
       />,
     )
-    expect(screen.getByText('Skills')).toBeInTheDocument()
-    expect(screen.getByText('Content')).toBeInTheDocument()
+    expect(screen.getByText('SKILL')).toBeInTheDocument()
+    expect(screen.getByText('CONTENT')).toBeInTheDocument()
     expect(screen.getByText('Docker was not detected.')).toBeInTheDocument()
   })
 
@@ -64,14 +65,29 @@ describe('Recommendations', () => {
   })
 })
 
-describe('ScorePill', () => {
+describe('score bands', () => {
+  // Assert the banding logic, not the Tailwind class names — restyling should
+  // not break tests, and it did the first time these were written that way.
   it.each([
-    [85, 'emerald'],
-    [55, 'amber'],
-    [20, 'rose'],
-  ])('bands %i%% into the %s colour', (score, colour) => {
-    const { container } = render(<ScorePill score={score} />)
-    expect(container.firstChild.className).toContain(colour)
-    expect(screen.getByText(`${score}%`)).toBeInTheDocument()
+    [100, 'strong'],
+    [70, 'strong'],
+    [69.9, 'partial'],
+    [45, 'partial'],
+    [44.9, 'weak'],
+    [0, 'weak'],
+  ])('bands %s%% as %s', (score, expected) => {
+    expect(band(score).key).toBe(expected)
+  })
+
+  it('gives each band a distinct human label', () => {
+    const labels = [90, 55, 10].map((s) => band(s).label)
+    expect(new Set(labels).size).toBe(3)
+  })
+})
+
+describe('ScorePill', () => {
+  it('renders the score as a percentage', () => {
+    render(<ScorePill score={78.4} />)
+    expect(screen.getByText('78.4%')).toBeInTheDocument()
   })
 })

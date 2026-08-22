@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import { ScorePill } from '@/components/ScorePill'
 import { Alert } from '@/components/ui'
 import { analysisApi, errorMessage } from '@/lib/api'
+
 export function History() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
   useEffect(() => {
     analysisApi
       .list()
@@ -14,6 +16,7 @@ export function History() {
       .catch((e) => setError(errorMessage(e, 'Could not load your history')))
       .finally(() => setLoading(false))
   }, [])
+
   async function handleDelete(id) {
     try {
       await analysisApi.remove(id)
@@ -22,41 +25,46 @@ export function History() {
       setError(errorMessage(e, 'Could not delete that analysis'))
     }
   }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">History</h1>
-        <p className="mt-1.5 text-slate-600 dark:text-slate-400">
-          Every analysis you have run. Results are stored as computed, so past scores never change.
+        <span className="label">Archive</span>
+        <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">History</h1>
+        <p className="mt-2 max-w-lg text-sm text-ink-500 dark:text-ink-400">
+          Results are stored exactly as computed, so a past score never changes
+          when the skill dictionary does.
         </p>
       </div>
 
       {error && <Alert>{error}</Alert>}
 
       {loading ? (
-        <p className="text-sm text-slate-500">Loading…</p>
+        <p className="label">Loading…</p>
       ) : items.length === 0 ? (
-        <div className="surface p-10 text-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">No analyses yet.</p>
+        <div className="panel px-6 py-16 text-center">
+          <p className="text-sm text-ink-500 dark:text-ink-400">No analyses yet.</p>
           <Link
             to="/analyze"
-            className="mt-4 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
+            className="mt-5 inline-block rounded-xs bg-acid-400 px-5 py-2.5 font-mono text-[11px]
+                       font-medium uppercase tracking-[0.12em] text-ink-950 hover:bg-acid-300"
           >
             Run your first analysis
           </Link>
         </div>
       ) : (
-        <ul className="space-y-2">
-          {items.map((a) => (
-            <li key={a.id} className="surface flex items-center gap-4 p-4">
+        <ul className="divide-y divide-paper-line border-t border-paper-line dark:divide-ink-800 dark:border-ink-800">
+          {items.map((a, i) => (
+            <li key={a.id} className="group flex items-center gap-4 py-4">
+              <span className="num hidden w-8 shrink-0 text-[11px] text-ink-300 sm:block dark:text-ink-700">
+                {String(items.length - i).padStart(2, '0')}
+              </span>
               <Link to={`/results/${a.id}`} className="min-w-0 flex-1">
-                <p className="truncate font-medium">{a.job_title || 'Untitled role'}</p>
-                <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                  {a.resume_filename} ·{' '}
-                  {new Date(a.created_at).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                <p className="truncate text-sm font-medium transition-colors group-hover:text-acid-600 dark:group-hover:text-acid-400">
+                  {a.job_title || 'Untitled role'}
+                </p>
+                <p className="num mt-0.5 truncate text-[11px] text-ink-400 dark:text-ink-600">
+                  {a.resume_filename} · {new Date(a.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </p>
               </Link>
               <ScorePill score={a.match_score} />
@@ -64,10 +72,10 @@ export function History() {
                 type="button"
                 onClick={() => handleDelete(a.id)}
                 aria-label={`Delete analysis for ${a.job_title || 'untitled role'}`}
-                className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-500 transition
-                           hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                className="shrink-0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em]
+                           text-ink-300 transition-colors hover:text-alert dark:text-ink-700"
               >
-                Delete
+                Del
               </button>
             </li>
           ))}

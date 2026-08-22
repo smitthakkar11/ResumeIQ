@@ -1,27 +1,29 @@
 /**
- * Section detection is a heuristic on unstructured text, so the wording is
- * deliberately "not detected" rather than "missing".
+ * Section detection is a heuristic on unstructured text, so the wording stays
+ * "not detected" rather than "missing".
  */
 export function SectionChecklist({ sections }) {
   return (
     <>
-      <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+      <ul className="divide-y divide-paper-line dark:divide-ink-800">
         {Object.entries(sections).map(([name, present]) => (
-          <li key={name} className="flex items-center gap-2.5 text-sm">
-            <span
-              aria-hidden
-              className={`grid size-4 shrink-0 place-items-center rounded-full text-[10px] font-bold ${present ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'}`}
-            >
-              {present ? '✓' : '–'}
+          <li key={name} className="flex items-center justify-between py-2.5">
+            <span className={`text-sm ${present ? '' : 'text-ink-400 dark:text-ink-600'}`}>
+              {name}
             </span>
-            <span className={present ? '' : 'text-slate-500 dark:text-slate-500'}>{name}</span>
-            <span className="sr-only">{present ? 'detected' : 'not detected'}</span>
+            <span
+              className={`num text-[10px] uppercase tracking-[0.12em] ${
+                present ? 'text-acid-600 dark:text-acid-400' : 'text-ink-400 dark:text-ink-600'
+              }`}
+            >
+              {present ? 'detected' : 'not detected'}
+            </span>
           </li>
         ))}
       </ul>
-      <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
-        Detected from headings in the extracted text. An unusual heading or a two-column layout can
-        hide a section that is genuinely there.
+      <p className="mt-4 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+        Read from headings in the extracted text. An unusual heading or a
+        two-column layout can hide a section that is genuinely there.
       </p>
     </>
   )

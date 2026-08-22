@@ -45,11 +45,15 @@ def build_recommendations(
     if missing_skills:
         shown = ", ".join(missing_skills[:5])
         more = f" (and {len(missing_skills) - 5} more)" if len(missing_skills) > 5 else ""
+        # "Docker appears" but "Docker and AWS appear".
+        verb = "appears" if len(missing_skills) == 1 else "appear"
+        it = "it" if len(missing_skills) == 1 else "them"
         tips.append(
             Recommendation(
                 "skills",
-                f"{shown}{more} appear in the job description but were not detected "
-                f"in your resume. If you have used them, name them explicitly.",
+                f"{shown}{more} {verb} in the job description but "
+                f"{'was' if len(missing_skills) == 1 else 'were'} not detected in your "
+                f"resume. If you have used {it}, name {it} explicitly.",
             )
         )
 

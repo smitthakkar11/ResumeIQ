@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { GoogleButton } from '@/components/GoogleButton'
+import { AuthShell } from '@/components/AuthShell'
 import { Alert, Button, Field } from '@/components/ui'
 import { errorMessage } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -73,13 +74,20 @@ export function Login() {
     }
   }
   return (
-    <div className="mx-auto max-w-sm py-8">
-      <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-      <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
-        Sign in to analyse your resume against a job description.
-      </p>
-
-      <form onSubmit={handleSubmit} className="mt-7 space-y-4">
+    <AuthShell
+      eyebrow="Sign in"
+      title="Welcome back"
+      subtitle="Analyse a resume against a job description."
+      footer={
+        <>
+          No account?{' '}
+          <Link to="/signup" className="font-medium text-acid-600 hover:underline dark:text-acid-400">
+            Create one
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && <Alert>{error}</Alert>}
 
         <Field
@@ -107,16 +115,6 @@ export function Login() {
 
         <GoogleButton disabled={loading} />
       </form>
-
-      <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-        No account?{' '}
-        <Link
-          to="/signup"
-          className="font-medium text-brand-600 hover:underline dark:text-brand-400"
-        >
-          Create one
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   )
 }
