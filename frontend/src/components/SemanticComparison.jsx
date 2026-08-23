@@ -16,7 +16,7 @@ export function SemanticComparison({ result }) {
       label: 'Meaning',
       value: result.semantic_similarity,
       note: 'Whether you describe the same work, even in different words.',
-      fill: 'bg-acid-400',
+      fill: 'bg-brand-500',
     },
   ]
 
@@ -25,7 +25,7 @@ export function SemanticComparison({ result }) {
   return (
     <section>
       <div className="rule mb-5 pt-4">
-        <h3 className="label">Wording vs meaning</h3>
+        <h3 className="font-display text-lg font-bold tracking-tight">Wording vs meaning</h3>
       </div>
 
       <div className="grid gap-8 sm:grid-cols-2">
@@ -42,14 +42,14 @@ export function SemanticComparison({ result }) {
                 style={{ width: `${Math.min(row.value, 100)}%`, transition: 'width 600ms cubic-bezier(.2,.8,.2,1)' }}
               />
             </span>
-            <p className="mt-2.5 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+            <p className="mt-2.5 text-[13px] leading-relaxed text-ink-400 dark:text-ink-600">
               {row.note}
             </p>
           </div>
         ))}
       </div>
 
-      <p className="mt-6 border-l-2 border-acid-400 pl-4 text-[11px] leading-relaxed text-ink-500 dark:text-ink-400">
+      <p className="mt-6 border-l-2 border-brand-500 pl-4 text-[13px] leading-relaxed text-ink-500 dark:text-ink-400">
         {gap > 5
           ? `You describe this work well, but in different words than the posting uses — worth borrowing their phrasing where it is honest.`
           : gap < -5

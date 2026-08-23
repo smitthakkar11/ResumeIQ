@@ -29,26 +29,25 @@ export function Dashboard() {
     <div className="space-y-14">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <span className="label">Signed in as {user.email}</span>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">
-            {user.name.split(' ')[0]}
+          <h1 className="font-display text-4xl font-extrabold tracking-tight">
+            Hello, {user.name.split(' ')[0]}
           </h1>
+          <p className="mt-2 text-base text-ink-500 dark:text-ink-400">{user.email}</p>
         </div>
         <Link
           to="/analyze"
-          className="rounded-xs bg-acid-400 px-5 py-3 font-mono text-[11px] font-medium uppercase
-                     tracking-[0.12em] text-ink-950 transition-colors hover:bg-acid-300"
+          className="rounded-md bg-brand-600 px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-700"
         >
           New analysis
         </Link>
       </div>
 
       {/* ---- counters ---- */}
-      <div className="grid gap-px bg-paper-line sm:grid-cols-3 dark:bg-ink-800">
+      <div className="grid gap-5 sm:grid-cols-3">
         {STATS.map(([label, value]) => (
-          <div key={label} className="bg-paper px-5 py-6 dark:bg-ink-950">
-            <span className="label">{label}</span>
-            <p className="num mt-2 text-4xl font-medium">{value}</p>
+          <div key={label} className="panel p-6">
+            <p className="text-sm font-medium text-ink-500 dark:text-ink-400">{label}</p>
+            <p className="num mt-2 text-4xl font-semibold tracking-tight">{value}</p>
           </div>
         ))}
       </div>
@@ -58,8 +57,8 @@ export function Dashboard() {
         <SectionHead
           right={
             recent.length > 0 && (
-              <Link to="/history" className="label transition-colors hover:text-acid-600 dark:hover:text-acid-400">
-                View all →
+              <Link to="/history" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
+                View all
               </Link>
             )
           }
@@ -68,31 +67,29 @@ export function Dashboard() {
         </SectionHead>
 
         {recent.length === 0 ? (
-          <div className="panel px-6 py-12 text-center">
-            <p className="text-sm text-ink-500 dark:text-ink-400">
-              Nothing analysed yet.
-            </p>
+          <div className="panel px-6 py-14 text-center">
+            <p className="text-base text-ink-500 dark:text-ink-400">Nothing analysed yet.</p>
             <Link
               to="/resume/upload"
-              className="mt-4 inline-block font-mono text-[11px] uppercase tracking-[0.12em]
-                         text-acid-600 hover:underline dark:text-acid-400"
+              className="mt-5 inline-block rounded-md bg-brand-600 px-5 py-2.5 text-[15px]
+                         font-semibold text-white transition-colors hover:bg-brand-700"
             >
-              Upload a resume →
+              Upload a resume
             </Link>
           </div>
         ) : (
-          <ul className="divide-y divide-paper-line dark:divide-ink-800">
+          <ul className="space-y-3">
             {recent.slice(0, 5).map((a) => (
               <li key={a.id}>
                 <Link
                   to={`/results/${a.id}`}
-                  className="group flex items-center gap-4 py-3.5 transition-colors"
+                  className="panel flex items-center gap-4 p-4 transition-colors hover:border-brand-500/40"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium transition-colors group-hover:text-acid-600 dark:group-hover:text-acid-400">
+                    <span className="block truncate text-[15px] font-semibold">
                       {a.job_title || 'Untitled role'}
                     </span>
-                    <span className="num mt-0.5 block truncate text-[11px] text-ink-400 dark:text-ink-600">
+                    <span className="mt-1 block truncate text-sm text-ink-500 dark:text-ink-400">
                       {a.resume_filename} · {new Date(a.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     </span>
                   </span>

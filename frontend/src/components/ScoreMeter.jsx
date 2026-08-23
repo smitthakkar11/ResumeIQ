@@ -1,51 +1,35 @@
-/**
- * The headline score: a large mono figure over a segmented meter.
- *
- * Hand-built rather than a chart library. 40 discrete segments read as a
- * measured quantity — a smooth arc reads as decoration.
- */
-
 import { band } from '@/lib/score'
 
-const SEGMENTS = 40
-
+/** The headline score. Large enough to be the first thing you see. */
 export function ScoreMeter({ score }) {
   const tone = band(score)
-  const lit = Math.round((score / 100) * SEGMENTS)
 
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <span className="label">Overall match</span>
-        <span className={`label ${tone.text}`}>{tone.label}</span>
-      </div>
-
-      <div className="mt-4 flex items-end gap-1">
-        <span className={`num text-7xl leading-none font-medium ${tone.text}`}>
-          {Math.floor(score)}
+        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone.soft} ${tone.text}`}>
+          {tone.label}
         </span>
-        <span className={`num text-3xl leading-none font-medium ${tone.text} opacity-60`}>
-          .{Math.round((score % 1) * 10)}
+      </div>
+
+      <div className="mt-6 flex items-baseline gap-1.5">
+        <span className={`num text-8xl leading-none font-semibold tracking-tighter ${tone.text}`}>
+          {score.toFixed(1)}
         </span>
-        <span className="num mb-1 ml-1 text-lg text-ink-400 dark:text-ink-500">%</span>
+        <span className="num text-2xl font-medium text-ink-400">%</span>
       </div>
 
-      {/* Segmented meter. Unlit segments stay visible so the scale is legible. */}
-      <div className="mt-6 flex gap-[3px]" aria-hidden>
-        {Array.from({ length: SEGMENTS }, (_, i) => (
-          <span
-            key={i}
-            className={`h-8 flex-1 ${
-              i < lit ? tone.fill : 'bg-paper-line dark:bg-ink-800'
-            }`}
-            style={{ transition: 'background-color 240ms ease', transitionDelay: `${i * 8}ms` }}
-          />
-        ))}
+      <div className="mt-8 h-3 overflow-hidden rounded-full bg-paper-line dark:bg-ink-800">
+        <div
+          className={`h-full rounded-full ${tone.fill}`}
+          style={{ width: `${Math.min(score, 100)}%`, transition: 'width 700ms cubic-bezier(.2,.8,.2,1)' }}
+        />
       </div>
 
-      <div className="mt-2 flex justify-between">
+      <div className="mt-2.5 flex justify-between">
         {[0, 25, 50, 75, 100].map((t) => (
-          <span key={t} className="num text-[10px] text-ink-400 dark:text-ink-600">
+          <span key={t} className="num text-[11px] text-ink-400">
             {t}
           </span>
         ))}

@@ -22,7 +22,7 @@ export function GoogleButton({ disabled }) {
     <>
       <div className="flex items-center gap-3 py-1">
         <span className="h-px flex-1 bg-paper-line dark:bg-ink-800" />
-        <span className="label">or</span>
+        <span className="text-sm text-ink-400">or</span>
         <span className="h-px flex-1 bg-paper-line dark:bg-ink-800" />
       </div>
 

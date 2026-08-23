@@ -26,11 +26,11 @@ export function AnalysisReport({ result, divider = false }) {
       <div className="panel grid gap-10 p-6 lg:grid-cols-[1.1fr_1fr] lg:p-8">
         <ScoreMeter score={result.match_score} />
         <div className="lg:border-l lg:border-paper-line lg:pl-10 dark:lg:border-ink-800">
-          <span className="label">Breakdown</span>
+          <h3 className="font-display text-lg font-bold tracking-tight">Breakdown</h3>
           <div className="mt-3">
             <ComponentBars result={result} />
           </div>
-          <p className="mt-4 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+          <p className="mt-4 text-[13px] leading-relaxed text-ink-400 dark:text-ink-600">
             Each part is weighted and combined into the overall figure.
           </p>
         </div>
@@ -84,9 +84,9 @@ export function AnalysisReport({ result, divider = false }) {
           {result.keywords.map((k) => (
             <span
               key={k.term}
-              className={`rounded-xs border px-2 py-1 font-mono text-[11px] ${
+              className={`rounded-md border px-2 py-1 font-mono text-[11px] ${
                 k.found
-                  ? 'border-acid-500/40 bg-acid-400/10 text-acid-700 dark:text-acid-300'
+                  ? 'border-brand-500/30 bg-brand-500/10 text-brand-700 dark:text-brand-300'
                   : 'border-paper-line text-ink-500 line-through decoration-alert dark:border-ink-700 dark:text-ink-400'
               }`}
             >

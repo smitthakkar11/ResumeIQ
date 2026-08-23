@@ -43,15 +43,17 @@ export function Analyze() {
   return (
     <div className="space-y-12">
       <div>
-        <span className="label">New analysis</span>
-        <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">Analyze</h1>
+        <h1 className="font-display text-4xl font-extrabold tracking-tight">Analyze</h1>
+        <p className="mt-2 text-base text-ink-500 dark:text-ink-400">
+          Compare one of your resumes against a job description.
+        </p>
       </div>
 
       {error && <Alert>{error}</Alert>}
 
       {resumes.length === 0 ? (
         <div className="panel px-6 py-16 text-center">
-          <p className="text-sm text-ink-500 dark:text-ink-400">
+          <p className="text-base text-ink-500 dark:text-ink-400">
             Upload a resume first, then come back here.
           </p>
         </div>
@@ -60,12 +62,13 @@ export function Analyze() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_1fr]">
           <div className="space-y-5">
             <label className="block">
-              <span className="label mb-2 block text-ink-600 dark:text-ink-400">Resume</span>
+              <span className="mb-2 block text-sm font-medium text-ink-700 dark:text-ink-300">Resume</span>
               <select
                 value={resumeId}
                 onChange={(e) => setResumeId(Number(e.target.value))}
-                className="w-full rounded-xs border border-paper-line bg-transparent px-3 py-2.5 text-sm
-                           outline-none focus:border-acid-500 dark:border-ink-700"
+                className="w-full rounded-md border border-paper-line bg-white px-3.5 py-3 text-[15px]
+                           outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/12
+                           dark:border-ink-700 dark:bg-ink-900"
               >
                 {resumes.map((r) => (
                   <option key={r.id} value={r.id} className="bg-white dark:bg-ink-900">
@@ -85,7 +88,7 @@ export function Analyze() {
           </div>
 
           <label className="block">
-            <span className="label mb-2 flex items-baseline justify-between text-ink-600 dark:text-ink-400">
+            <span className="mb-2 flex items-baseline justify-between text-sm font-medium text-ink-700 dark:text-ink-300">
               <span>Job description</span>
               <span className={`num ${tooShort ? 'text-alert' : 'text-ink-400 dark:text-ink-600'}`}>
                 {jobDescription.length}
@@ -98,9 +101,10 @@ export function Analyze() {
               rows={14}
               required
               placeholder="Paste the full job description here…"
-              className="w-full rounded-xs border border-paper-line bg-transparent px-3.5 py-3 text-sm
+              className="w-full rounded-md border border-paper-line bg-white px-4 py-3.5 text-[15px]
                          leading-relaxed outline-none placeholder:text-ink-400
-                         focus:border-acid-500 dark:border-ink-700 dark:placeholder:text-ink-600"
+                         focus:border-brand-500 focus:ring-4 focus:ring-brand-500/12
+                         dark:border-ink-700 dark:bg-ink-900 dark:placeholder:text-ink-500"
             />
           </label>
           </div>

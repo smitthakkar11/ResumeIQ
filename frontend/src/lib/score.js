@@ -6,8 +6,26 @@
  */
 export function band(score) {
   if (score >= 70)
-    return { key: 'strong', label: 'Strong match', fill: 'bg-acid-400', text: 'text-acid-600 dark:text-acid-400' }
+    return {
+      key: 'strong',
+      label: 'Strong match',
+      fill: 'bg-brand-500',
+      text: 'text-brand-600 dark:text-brand-400',
+      soft: 'bg-brand-50 dark:bg-brand-500/12',
+    }
   if (score >= 45)
-    return { key: 'partial', label: 'Partial match', fill: 'bg-warn', text: 'text-warn' }
-  return { key: 'weak', label: 'Weak match', fill: 'bg-alert', text: 'text-alert' }
+    return {
+      key: 'partial',
+      label: 'Partial match',
+      fill: 'bg-warn',
+      text: 'text-warn',
+      soft: 'bg-warn-soft dark:bg-warn/12',
+    }
+  return {
+    key: 'weak',
+    label: 'Weak match',
+    fill: 'bg-alert',
+    text: 'text-alert',
+    soft: 'bg-alert-soft dark:bg-alert/12',
+  }
 }

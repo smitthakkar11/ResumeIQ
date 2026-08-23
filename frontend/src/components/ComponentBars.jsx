@@ -1,8 +1,6 @@
 /**
- * The three score components as labelled rows.
- *
- * The point of a transparent score is seeing which part drags it down, so the
- * weight is printed next to each figure rather than hidden in a tooltip.
+ * The three score components. Seeing which one drags the total down is the
+ * whole point of a transparent score, so each gets its own row and weight.
  */
 export function ComponentBars({ result }) {
   const rows = [
@@ -12,26 +10,24 @@ export function ComponentBars({ result }) {
   ].filter((r) => result.weights[r.key] !== undefined)
 
   return (
-    <div className="divide-y divide-paper-line dark:divide-ink-800">
+    <div className="space-y-6">
       {rows.map((row) => (
-        <div key={row.key} className="grid grid-cols-[7.5rem_1fr_auto] items-center gap-4 py-3.5">
-          <span className="label !normal-case !tracking-normal !text-[11px] text-ink-500 dark:text-ink-400">
-            {row.label}
-          </span>
-
-          <span className="relative h-[6px] bg-paper-line dark:bg-ink-800">
-            <span
-              className="absolute inset-y-0 left-0 bg-ink-950 dark:bg-ink-100"
-              style={{ width: `${Math.min(row.value, 100)}%`, transition: 'width 500ms cubic-bezier(.2,.8,.2,1)' }}
-            />
-          </span>
-
-          <span className="flex items-baseline gap-2">
-            <span className="num w-14 text-right text-sm font-medium">{row.value}%</span>
-            <span className="num w-9 text-right text-[10px] text-ink-400 dark:text-ink-600">
-              ×{result.weights[row.key]}
+        <div key={row.key}>
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="text-sm font-medium">{row.label}</span>
+            <span className="flex items-baseline gap-2.5">
+              <span className="num text-lg font-semibold">{row.value}%</span>
+              <span className="num w-10 text-right text-xs text-ink-400">
+                ×{result.weights[row.key]}
+              </span>
             </span>
-          </span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-paper-line dark:bg-ink-800">
+            <div
+              className="h-full rounded-full bg-ink-900 dark:bg-ink-300"
+              style={{ width: `${Math.min(row.value, 100)}%`, transition: 'width 600ms cubic-bezier(.2,.8,.2,1)' }}
+            />
+          </div>
         </div>
       ))}
     </div>

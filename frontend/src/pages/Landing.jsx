@@ -1,111 +1,119 @@
 import { Link } from 'react-router-dom'
 
 const STEPS = [
-  ['01', 'Upload your resume', 'A PDF is all we need.'],
-  ['02', 'Paste the job post', 'Any role you are applying for.'],
-  ['03', 'See what is missing', 'Skills, keywords and phrasing.'],
-  ['04', 'Fix it and re-check', 'Watch the score move.'],
+  ['Upload your resume', 'A PDF is all we need. Keep several versions and compare them.'],
+  ['Paste the job post', 'Any role you are applying for, in full.'],
+  ['See what is missing', 'The exact skills, keywords and phrasing you left out.'],
+  ['Fix it and re-check', 'Re-upload and watch the score move.'],
 ]
 
 const DEMO = [
-  ['Wording', 31.5],
-  ['Skills', 85.0],
-  ['Keywords', 70.0],
+  ['Text similarity', 31.5],
+  ['Skill match', 85.0],
+  ['Keyword match', 70.0],
 ]
 
 export function Landing() {
   return (
     <div className="space-y-28">
       {/* ---------------- hero ---------------- */}
-      <section className="grid items-center gap-14 lg:grid-cols-[1.05fr_.95fr]">
+      <section className="grid items-center gap-16 lg:grid-cols-2">
         <div>
-          <h1 className="font-display text-5xl leading-[1.04] font-bold tracking-[-0.03em] sm:text-6xl">
-            Know exactly
-            <br />
-            <span className="text-acid-600 dark:text-acid-400">why</span> your resume
-            <br />
-            matches.
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3.5 py-1.5
+                           text-[13px] font-semibold text-brand-700
+                           dark:bg-brand-500/12 dark:text-brand-300">
+            Free to use
+          </span>
+
+          <h1 className="mt-6 font-display text-[3.4rem] leading-[1.05] font-extrabold tracking-[-0.03em]">
+            Know exactly{' '}
+            <span className="text-brand-600 dark:text-brand-400">why</span> your
+            resume matches.
           </h1>
 
-          <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink-500 dark:text-ink-400">
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-600 dark:text-ink-300">
             Most tools hand you one number and no explanation. ResumeIQ shows you
             the skills you are missing, the words the employer used that you
             didn&apos;t, and exactly where the score comes from.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
+          <div className="mt-9 flex flex-wrap items-center gap-4">
             <Link
               to="/signup"
-              className="rounded-xs bg-acid-400 px-5 py-3 font-mono text-[11px] font-medium uppercase
-                         tracking-[0.12em] text-ink-950 transition-colors hover:bg-acid-300"
+              className="rounded-md bg-brand-600 px-7 py-3.5 text-base font-semibold text-white
+                         transition-colors hover:bg-brand-700"
             >
               Check your resume
             </Link>
             <Link
               to="/login"
-              className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-500
-                         transition-colors hover:text-ink-950 dark:hover:text-ink-100"
+              className="text-base font-medium text-ink-600 transition-colors hover:text-ink-950
+                         dark:text-ink-400 dark:hover:text-ink-100"
             >
-              Sign in →
+              Sign in
             </Link>
           </div>
 
-          <p className="mt-6 text-[11px] text-ink-400 dark:text-ink-600">
-            Free · your resume stays private to your account
+          <p className="mt-6 text-sm text-ink-400">
+            Your resume stays private to your account.
           </p>
         </div>
 
         {/* The product itself as the hero image. */}
-        <div className="panel p-6 sm:p-7">
-          <div className="flex items-baseline justify-between">
-            <span className="label">Senior Frontend Engineer</span>
-            <span className="label text-acid-600 dark:text-acid-400">Strong match</span>
-          </div>
-
-          <div className="mt-5 flex items-end gap-1">
-            <span className="num text-6xl leading-none font-medium text-acid-600 dark:text-acid-400">
-              76
+        <div className="panel p-8">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm font-semibold text-ink-500">Senior Frontend Engineer</span>
+            <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700
+                             dark:bg-brand-500/12 dark:text-brand-300">
+              Strong match
             </span>
-            <span className="num mb-1 text-base text-ink-400">%</span>
           </div>
 
-          <div className="mt-5 flex gap-[3px]" aria-hidden>
-            {Array.from({ length: 32 }, (_, i) => (
-              <span
-                key={i}
-                className={`h-6 flex-1 ${i < 24 ? 'bg-acid-400' : 'bg-paper-line dark:bg-ink-800'}`}
-              />
-            ))}
+          <div className="mt-5 flex items-baseline gap-1.5">
+            <span className="num text-7xl leading-none font-semibold tracking-tighter text-brand-600 dark:text-brand-400">
+              76.4
+            </span>
+            <span className="num text-xl font-medium text-ink-400">%</span>
           </div>
 
-          <div className="mt-6 space-y-3 border-t border-paper-line pt-5 dark:border-ink-800">
+          <div className="mt-6 h-3 overflow-hidden rounded-full bg-paper-line dark:bg-ink-800">
+            <div className="h-full rounded-full bg-brand-500" style={{ width: '76.4%' }} />
+          </div>
+
+          <div className="mt-8 space-y-5 border-t border-paper-line pt-7 dark:border-ink-800">
             {DEMO.map(([label, value]) => (
-              <div key={label} className="grid grid-cols-[5rem_1fr_auto] items-center gap-3">
-                <span className="text-[11px] text-ink-500 dark:text-ink-400">{label}</span>
-                <span className="h-[5px] bg-paper-line dark:bg-ink-800">
-                  <span className="block h-full bg-ink-950 dark:bg-ink-100" style={{ width: `${value}%` }} />
-                </span>
-                <span className="num text-[11px]">{value}</span>
+              <div key={label}>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-sm font-medium">{label}</span>
+                  <span className="num text-sm font-semibold">{value}%</span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-paper-line dark:bg-ink-800">
+                  <div className="h-full rounded-full bg-ink-900 dark:bg-ink-300" style={{ width: `${value}%` }} />
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 border-t border-paper-line pt-5 dark:border-ink-800">
-            <span className="label">You have</span>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {['React', 'TypeScript', 'Node.js', 'AWS'].map((s) => (
-                <span key={s} className="rounded-xs border border-acid-500/40 bg-acid-400/10 px-2 py-1 font-mono text-[11px] text-acid-700 dark:text-acid-300">
-                  {s}
-                </span>
-              ))}
+          <div className="mt-7 grid gap-5 border-t border-paper-line pt-7 sm:grid-cols-2 dark:border-ink-800">
+            <div>
+              <p className="mb-2.5 text-xs font-semibold text-ink-400 uppercase tracking-wide">You have</p>
+              <div className="flex flex-wrap gap-2">
+                {['React', 'TypeScript', 'Node.js'].map((s) => (
+                  <span key={s} className="rounded-md border border-brand-500/25 bg-brand-50 px-2.5 py-1.5 text-[13px] font-medium text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/12 dark:text-brand-300">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
-            <span className="label mt-4 block">They asked for</span>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {['GraphQL', 'Kubernetes'].map((s) => (
-                <span key={s} className="rounded-xs border border-paper-line px-2 py-1 font-mono text-[11px] text-ink-500 line-through decoration-alert dark:border-ink-700 dark:text-ink-400">
-                  {s}
-                </span>
-              ))}
+            <div>
+              <p className="mb-2.5 text-xs font-semibold text-ink-400 uppercase tracking-wide">Missing</p>
+              <div className="flex flex-wrap gap-2">
+                {['GraphQL', 'Kubernetes'].map((s) => (
+                  <span key={s} className="rounded-md border border-alert/20 bg-alert-soft px-2.5 py-1.5 text-[13px] font-medium text-alert dark:bg-alert/10">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -113,32 +121,35 @@ export function Landing() {
 
       {/* ---------------- how it works ---------------- */}
       <section>
-        <div className="rule pt-4">
-          <h2 className="label">How it works</h2>
-        </div>
-
-        <ol className="mt-8 grid gap-px bg-paper-line sm:grid-cols-2 lg:grid-cols-4 dark:bg-ink-800">
-          {STEPS.map(([n, title, note]) => (
-            <li key={n} className="group bg-paper p-6 transition-colors hover:bg-white dark:bg-ink-950 dark:hover:bg-ink-900">
-              <span className="num text-[11px] text-ink-300 transition-colors group-hover:text-acid-500 dark:text-ink-700">
-                {n}
+        <h2 className="font-display text-3xl font-extrabold tracking-tight">How it works</h2>
+        <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map(([title, note], i) => (
+            <li key={title} className="panel p-6">
+              <span className="grid size-9 place-items-center rounded-md bg-brand-50 font-display text-base
+                               font-bold text-brand-700 dark:bg-brand-500/12 dark:text-brand-300">
+                {i + 1}
               </span>
-              <p className="mt-3 font-display text-base font-semibold">{title}</p>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-ink-400 dark:text-ink-500">{note}</p>
+              <p className="mt-4 font-display text-lg font-bold tracking-tight">{title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-ink-500 dark:text-ink-400">{note}</p>
             </li>
           ))}
         </ol>
       </section>
 
       {/* ---------------- closing ---------------- */}
-      <section className="rule flex flex-wrap items-center justify-between gap-6 pt-12">
-        <h2 className="max-w-md font-display text-2xl leading-snug font-bold tracking-tight">
-          Stop guessing why you didn&apos;t hear back.
-        </h2>
+      <section className="panel flex flex-wrap items-center justify-between gap-8 p-10">
+        <div>
+          <h2 className="max-w-lg font-display text-3xl leading-snug font-extrabold tracking-tight">
+            Stop guessing why you didn&apos;t hear back.
+          </h2>
+          <p className="mt-3 text-base text-ink-500 dark:text-ink-400">
+            Upload a resume and get a full breakdown in seconds.
+          </p>
+        </div>
         <Link
           to="/signup"
-          className="rounded-xs bg-acid-400 px-5 py-3 font-mono text-[11px] font-medium uppercase
-                     tracking-[0.12em] text-ink-950 transition-colors hover:bg-acid-300"
+          className="rounded-md bg-brand-600 px-7 py-3.5 text-base font-semibold text-white
+                     transition-colors hover:bg-brand-700"
         >
           Check your resume
         </Link>

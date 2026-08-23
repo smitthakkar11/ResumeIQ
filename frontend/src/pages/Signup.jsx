@@ -49,7 +49,7 @@ export function Signup() {
       footer={
         <>
           Already registered?{' '}
-          <Link to="/login" className="font-medium text-acid-600 hover:underline dark:text-acid-400">
+          <Link to="/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
             Sign in
           </Link>
         </>

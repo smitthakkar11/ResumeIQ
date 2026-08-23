@@ -39,7 +39,7 @@ export function Results() {
     return (
       <div className="space-y-5">
         <Alert>{error || 'Analysis not found'}</Alert>
-        <Link to="/history" className="label transition-colors hover:text-acid-600 dark:hover:text-acid-400">
+        <Link to="/history" className="text-sm font-semibold text-brand-600 transition-colors hover:underline dark:text-brand-400">
           ← Back to history
         </Link>
       </div>
@@ -49,10 +49,10 @@ export function Results() {
   return (
     <div className="space-y-8">
       <div className="flex items-baseline justify-between gap-4">
-        <Link to="/history" className="label transition-colors hover:text-acid-600 dark:hover:text-acid-400">
+        <Link to="/history" className="text-sm font-semibold text-brand-600 transition-colors hover:underline dark:text-brand-400">
           ← History
         </Link>
-        <span className="num text-[11px] text-ink-400 dark:text-ink-600">
+        <span className="text-sm text-ink-400">
           {new Date(result.created_at).toLocaleString()}
         </span>
       </div>
@@ -61,10 +61,10 @@ export function Results() {
 
       {job && (
         <details className="rule group pt-4">
-          <summary className="label cursor-pointer list-none transition-colors hover:text-acid-600 dark:hover:text-acid-400">
-            Job description ▸
+          <summary className="cursor-pointer list-none font-display text-lg font-bold tracking-tight transition-colors hover:text-brand-600 dark:hover:text-brand-400">
+            Job description
           </summary>
-          <p className="mt-5 max-w-3xl text-sm leading-relaxed whitespace-pre-wrap text-ink-600 dark:text-ink-300">
+          <p className="mt-5 max-w-3xl text-[15px] leading-relaxed whitespace-pre-wrap text-ink-600 dark:text-ink-300">
             {job.description}
           </p>
         </details>

@@ -71,9 +71,8 @@ export function ResumeUpload() {
   return (
     <div className="space-y-12">
       <div>
-        <span className="label">Your files</span>
-        <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">Resumes</h1>
-        <p className="mt-2 max-w-lg text-sm text-ink-500 dark:text-ink-400">
+        <h1 className="font-display text-4xl font-extrabold tracking-tight">Resumes</h1>
+        <p className="mt-2 max-w-xl text-base text-ink-500 dark:text-ink-400">
           Upload a text-based PDF. Keep several versions and compare them against
           the same job.
         </p>
@@ -92,19 +91,19 @@ export function ResumeUpload() {
           setDragging(false)
           handleFile(e.dataTransfer.files[0])
         }}
-        className={`rounded-xs border border-dashed p-12 text-center transition-colors ${
+        className={`rounded-md border border-dashed p-12 text-center transition-colors ${
           dragging
-            ? 'border-acid-400 bg-acid-400/5'
+            ? 'border-brand-500 bg-brand-500/5'
             : 'border-paper-line dark:border-ink-700'
         }`}
       >
-        <p className="text-sm text-ink-500 dark:text-ink-400">Drop a PDF here</p>
+        <p className="text-base font-medium">Drop a PDF here</p>
         <div className="mx-auto mt-4 max-w-[11rem]">
           <Button type="button" loading={uploading} onClick={() => inputRef.current?.click()}>
             {uploading ? 'Reading' : 'Choose file'}
           </Button>
         </div>
-        <p className="label mt-4">PDF · max {MAX_MB} MB · not scanned</p>
+        <p className="mt-4 text-sm text-ink-400">PDF · max {MAX_MB} MB · not scanned</p>
         <input
           ref={inputRef}
           type="file"
@@ -120,21 +119,21 @@ export function ResumeUpload() {
         </SectionHead>
 
         {loading ? (
-          <p className="label">Loading…</p>
+          <p className="text-sm text-ink-500">Loading…</p>
         ) : resumes.length === 0 ? (
           <p className="py-8 text-center text-sm text-ink-500 dark:text-ink-400">
             Nothing uploaded yet.
           </p>
         ) : (
-          <ul className="divide-y divide-paper-line dark:divide-ink-800">
+          <ul className="space-y-3">
             {resumes.map((r) => (
-              <li key={r.id} className="flex items-center gap-4 py-3.5">
-                <span className="num shrink-0 rounded-xs border border-paper-line px-1.5 py-0.5 text-[10px] text-ink-500 dark:border-ink-700 dark:text-ink-400">
+              <li key={r.id} className="panel flex items-center gap-4 p-4">
+                <span className="num shrink-0 rounded-md bg-paper-line px-2 py-1 text-xs font-semibold text-ink-600 dark:bg-ink-800 dark:text-ink-300">
                   v{r.version}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm">{r.filename}</span>
-                  <span className="num mt-0.5 block text-[11px] text-ink-400 dark:text-ink-600">
+                  <span className="block truncate text-[15px] font-semibold">{r.filename}</span>
+                  <span className="mt-1 block text-sm text-ink-500 dark:text-ink-400">
                     {r.page_count} page{r.page_count === 1 ? '' : 's'} ·{' '}
                     {new Date(r.created_at).toLocaleDateString()}
                   </span>
@@ -142,15 +141,15 @@ export function ResumeUpload() {
                 <button
                   type="button"
                   onClick={() => resumeApi.get(r.id).then(setPreview).catch(() => {})}
-                  className="shrink-0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em]
-                             text-ink-400 transition-colors hover:text-acid-600 dark:hover:text-acid-400"
+                  className="shrink-0 px-2 py-1 text-sm font-medium
+                             text-ink-400 transition-colors hover:text-brand-600 dark:hover:text-brand-400"
                 >
                   Inspect
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(r.id)}
-                  className="shrink-0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em]
+                  className="shrink-0 px-2 py-1 text-sm font-medium
                              text-ink-300 transition-colors hover:text-alert dark:text-ink-700"
                 >
                   Del
@@ -178,7 +177,7 @@ export function ResumeUpload() {
                 <button
                   type="button"
                   onClick={() => setPreview(null)}
-                  className="label transition-colors hover:text-alert"
+                  className="text-sm font-medium text-ink-500 transition-colors hover:text-alert"
                 >
                   Close
                 </button>
@@ -186,7 +185,7 @@ export function ResumeUpload() {
             >
               Extracted text
             </SectionHead>
-            <pre className="panel max-h-96 overflow-auto p-5 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+            <pre className="panel max-h-96 overflow-auto p-5 font-mono text-[13px] leading-relaxed whitespace-pre-wrap">
               {preview.extracted_text}
             </pre>
             <p className="mt-2 text-[11px] text-ink-400 dark:text-ink-600">

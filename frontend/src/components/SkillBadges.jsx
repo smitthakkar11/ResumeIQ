@@ -1,4 +1,4 @@
-/** Skills grouped by category. Mono chips — these are identifiers, not prose. */
+/** Skills grouped by category. */
 export function SkillBadges({ skills, tone = 'neutral' }) {
   if (skills.length === 0) {
     return (
@@ -9,9 +9,12 @@ export function SkillBadges({ skills, tone = 'neutral' }) {
   }
 
   const chip = {
-    neutral: 'border-paper-line text-ink-700 dark:border-ink-700 dark:text-ink-300',
-    matched: 'border-acid-500/40 bg-acid-400/10 text-acid-700 dark:text-acid-300',
-    missing: 'border-alert/30 bg-alert/8 text-alert',
+    neutral:
+      'border-paper-line bg-white text-ink-700 dark:border-ink-700 dark:bg-ink-850 dark:text-ink-200',
+    matched:
+      'border-brand-500/25 bg-brand-50 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/12 dark:text-brand-300',
+    missing:
+      'border-alert/20 bg-alert-soft text-alert dark:bg-alert/10',
   }[tone]
 
   const byCategory = new Map()
@@ -22,13 +25,15 @@ export function SkillBadges({ skills, tone = 'neutral' }) {
   return (
     <div className="space-y-4">
       {[...byCategory].map(([category, names]) => (
-        <div key={category} className="grid grid-cols-[6.5rem_1fr] gap-3">
-          <span className="label pt-1.5">{category}</span>
-          <div className="flex flex-wrap gap-1.5">
+        <div key={category}>
+          <p className="mb-2 text-xs font-semibold text-ink-400 uppercase tracking-wide">
+            {category}
+          </p>
+          <div className="flex flex-wrap gap-2">
             {names.map((name) => (
               <span
                 key={name}
-                className={`rounded-xs border px-2 py-1 font-mono text-[11px] ${chip}`}
+                className={`rounded-md border px-2.5 py-1.5 text-[13px] font-medium ${chip}`}
               >
                 {name}
               </span>

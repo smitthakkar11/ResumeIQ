@@ -54,8 +54,8 @@ describe('Recommendations', () => {
         ]}
       />,
     )
-    expect(screen.getByText('SKILL')).toBeInTheDocument()
-    expect(screen.getByText('CONTENT')).toBeInTheDocument()
+    expect(screen.getByText('Skills')).toBeInTheDocument()
+    expect(screen.getByText('Content')).toBeInTheDocument()
     expect(screen.getByText('Docker was not detected.')).toBeInTheDocument()
   })
 

@@ -5,23 +5,26 @@
 export function SectionChecklist({ sections }) {
   return (
     <>
-      <ul className="divide-y divide-paper-line dark:divide-ink-800">
+      <ul className="grid gap-2.5 sm:grid-cols-2">
         {Object.entries(sections).map(([name, present]) => (
-          <li key={name} className="flex items-center justify-between py-2.5">
-            <span className={`text-sm ${present ? '' : 'text-ink-400 dark:text-ink-600'}`}>
-              {name}
-            </span>
+          <li key={name} className="flex items-center gap-2.5">
             <span
-              className={`num text-[10px] uppercase tracking-[0.12em] ${
-                present ? 'text-acid-600 dark:text-acid-400' : 'text-ink-400 dark:text-ink-600'
+              className={`grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold ${
+                present
+                  ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'
+                  : 'bg-paper-line text-ink-400 dark:bg-ink-800 dark:text-ink-500'
               }`}
             >
-              {present ? 'detected' : 'not detected'}
+              {present ? '✓' : '–'}
             </span>
+            <span className={`text-sm ${present ? '' : 'text-ink-400 dark:text-ink-500'}`}>
+              {name}
+            </span>
+            <span className="sr-only">{present ? 'detected' : 'not detected'}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-4 text-[11px] leading-relaxed text-ink-400 dark:text-ink-600">
+      <p className="mt-5 text-[13px] leading-relaxed text-ink-500 dark:text-ink-400">
         Read from headings in the extracted text. An unusual heading or a
         two-column layout can hide a section that is genuinely there.
       </p>

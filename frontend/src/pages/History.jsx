@@ -29,9 +29,8 @@ export function History() {
   return (
     <div className="space-y-8">
       <div>
-        <span className="label">Archive</span>
-        <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">History</h1>
-        <p className="mt-2 max-w-lg text-sm text-ink-500 dark:text-ink-400">
+        <h1 className="font-display text-4xl font-extrabold tracking-tight">History</h1>
+        <p className="mt-2 max-w-xl text-base text-ink-500 dark:text-ink-400">
           Results are stored exactly as computed, so a past score never changes
           when the skill dictionary does.
         </p>
@@ -40,14 +39,13 @@ export function History() {
       {error && <Alert>{error}</Alert>}
 
       {loading ? (
-        <p className="label">Loading…</p>
+        <p className="text-sm text-ink-500">Loading…</p>
       ) : items.length === 0 ? (
         <div className="panel px-6 py-16 text-center">
-          <p className="text-sm text-ink-500 dark:text-ink-400">No analyses yet.</p>
+          <p className="text-base text-ink-500 dark:text-ink-400">No analyses yet.</p>
           <Link
             to="/analyze"
-            className="mt-5 inline-block rounded-xs bg-acid-400 px-5 py-2.5 font-mono text-[11px]
-                       font-medium uppercase tracking-[0.12em] text-ink-950 hover:bg-acid-300"
+            className="rounded-md bg-brand-600 px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-700"
           >
             Run your first analysis
           </Link>
@@ -60,7 +58,7 @@ export function History() {
                 {String(items.length - i).padStart(2, '0')}
               </span>
               <Link to={`/results/${a.id}`} className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium transition-colors group-hover:text-acid-600 dark:group-hover:text-acid-400">
+                <p className="truncate text-sm font-medium transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-400">
                   {a.job_title || 'Untitled role'}
                 </p>
                 <p className="num mt-0.5 truncate text-[11px] text-ink-400 dark:text-ink-600">
@@ -72,7 +70,7 @@ export function History() {
                 type="button"
                 onClick={() => handleDelete(a.id)}
                 aria-label={`Delete analysis for ${a.job_title || 'untitled role'}`}
-                className="shrink-0 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em]
+                className="shrink-0 px-2 py-1 text-sm font-medium
                            text-ink-300 transition-colors hover:text-alert dark:text-ink-700"
               >
                 Del

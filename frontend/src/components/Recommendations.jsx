@@ -1,9 +1,9 @@
-const LABELS = {
-  skills: { text: 'SKILL', className: 'text-alert' },
-  keywords: { text: 'KEYWD', className: 'text-warn' },
-  structure: { text: 'STRUCT', className: 'text-ink-400 dark:text-ink-500' },
-  content: { text: 'CONTENT', className: 'text-ink-400 dark:text-ink-500' },
-  positive: { text: 'OK', className: 'text-acid-600 dark:text-acid-400' },
+const TAGS = {
+  skills: { text: 'Skills', className: 'bg-alert-soft text-alert dark:bg-alert/12' },
+  keywords: { text: 'Keywords', className: 'bg-warn-soft text-warn dark:bg-warn/12' },
+  structure: { text: 'Structure', className: 'bg-paper-line text-ink-600 dark:bg-ink-800 dark:text-ink-300' },
+  content: { text: 'Content', className: 'bg-paper-line text-ink-600 dark:bg-ink-800 dark:text-ink-300' },
+  positive: { text: 'Good', className: 'bg-brand-50 text-brand-700 dark:bg-brand-500/12 dark:text-brand-300' },
 }
 
 export function Recommendations({ items }) {
@@ -16,21 +16,22 @@ export function Recommendations({ items }) {
   }
 
   return (
-    <ol className="divide-y divide-paper-line dark:divide-ink-800">
+    <ul className="space-y-4">
       {items.map((item, i) => {
-        const tag = LABELS[item.category] ?? LABELS.content
+        const tag = TAGS[item.category] ?? TAGS.content
         return (
-          <li key={i} className="grid grid-cols-[2rem_4.5rem_1fr] gap-3 py-4">
-            <span className="num text-[11px] text-ink-300 dark:text-ink-700">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span className={`num text-[10px] tracking-[0.12em] pt-px ${tag.className}`}>
+          <li key={i} className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+            <span
+              className={`h-fit w-fit shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold sm:w-20 sm:text-center ${tag.className}`}
+            >
               {tag.text}
             </span>
-            <p className="text-sm leading-relaxed text-ink-700 dark:text-ink-300">{item.message}</p>
+            <p className="text-[15px] leading-relaxed text-ink-700 dark:text-ink-300">
+              {item.message}
+            </p>
           </li>
         )
       })}
-    </ol>
+    </ul>
   )
 }

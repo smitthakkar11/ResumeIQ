@@ -8,8 +8,7 @@ export function NotFound() {
       <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">That route doesn&apos;t exist.</p>
       <Link
         to="/"
-        className="mt-8 inline-block rounded-xs bg-acid-400 px-5 py-2.5 font-mono text-[11px] font-medium
-                   uppercase tracking-[0.12em] text-ink-950 transition-colors hover:bg-acid-300"
+        className="rounded-md bg-brand-600 px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-700"
       >
         Back to home
       </Link>

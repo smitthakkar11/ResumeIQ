@@ -489,6 +489,74 @@ pipeline here is a complete, working system on its own.
 
 ## Frontend notes
 
+Plain JavaScript, no TypeScript build step — `npm run build` is just
+`vite build`.
+
+The interface is light-first and deliberately warm: the neutral ramp is tinted
+brown so the page reads as paper rather than as a screen, with a deep green
+accent rather than the indigo every generated dashboard uses. Plus Jakarta Sans
+sets headings, Inter sets body copy, and JetBrains Mono is reserved for actual
+figures so numbers align in tables and lists.
+
+The score meter and component bars are plain `div`s rather than a chart
+library. That removed Recharts — roughly 340 kB, about half the bundle — and
+with it the library's default styling.
+
+> **Deviation from the original spec:** Recharts was listed in the stack and was
+> used in Phases 6–9. It is now removed, because both visualisations are simple
+> enough to build directly.
+
+Because there are no compile-time types, the shapes the backend returns are
+documented as **JSDoc typedefs** at the top of
+[`src/lib/api.js`](frontend/src/lib/api.js). Editors read these for
+autocomplete, and they keep the frontend's expectations written down next to
+the calls that rely on them.
+
+The practical consequence: renaming a field on the backend will not fail the
+build. It will render `undefined` in the browser instead. When you change an
+API response shape, grep the frontend for the old field name.
+
+## Security
+
+| Measure | Where |
+|---|---|
+| bcrypt, cost 12, per-password salt | `core/security.py` |
+| JWT HS256, 60-minute expiry, algorithm whitelist | `core/security.py` |
+| `SECRET_KEY` rejected if <32 chars or still the placeholder | `core/config.py` |
+| Rate limiting: 10 logins / 5 min, 5 signups / hour, per IP | `core/rate_limit.py` |
+| Identical error for unknown email and wrong password | `services/auth/auth_service.py` |
+| Row-level ownership inside every query, 404 not 403 | all routes |
+| `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` | `main.py` |
+| `/docs` and `/openapi.json` disabled outside development | `main.py` |
+| Uploads: 5 MB, 20 pages, magic-byte check | `services/resume/pdf_extractor.py` |
+| CORS restricted to configured origins | `main.py` |
+| No raw SQL — every query built through SQLAlchemy | throughout |
+| App connects to MySQL as `resumeiq`, never `root` | `scripts/init_db.sql` |
+| `.env` gitignored; only placeholder `.env.example` committed | repo root |
+| Only `VITE_`-prefixed vars reach the browser — `GOOGLE_CLIENT_SECRET` never does | `frontend/.env.example` |
+
+**Known limitation:** the rate limiter keeps its counters in process memory, so
+several uvicorn workers each get their own allowance and a restart clears them.
+That is fine for a single instance; a multi-instance deployment needs a shared
+store such as Redis. The interface would not change.
+
+## Why there is no ML classifier
+
+Phase 8 of the original plan was a supervised model predicting Strong /
+Moderate / Weak match. It was deliberately not built.
+
+Supervised learning needs labels, and there is no honest source for them here.
+Labelling from this system's own score would train a model to predict its own
+input — a circular exercise producing impressive-looking metrics that mean
+nothing. Labelling with an LLM would contradict the project's premise and
+inherit that model's errors as "ground truth". Public resume datasets are
+labelled by **job category**, not by match quality against a specific posting.
+
+Fabricating a dataset or its metrics was not an option. The classical NLP
+pipeline here is a complete, working system on its own.
+
+## Frontend notes
+
 The interface is deliberately built to read as an instrument rather than a
 generic dashboard: near-black canvas, one acid accent used sparingly, hairline
 rules instead of shadows, square corners, and **every figure set in monospace**
