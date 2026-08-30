@@ -1,5 +1,5 @@
 {
-  "_comment": "Curated skill dictionary. 'name' is the canonical form shown to users; 'aliases' are extra spellings matched case-insensitively (the canonical name is always matched too). Add new skills here rather than in code. Avoid aliases that are common English words: 'go' would match 'going', 'R' and 'C' appear everywhere. For those, list only unambiguous aliases.",
+  "_comment": "Curated skill dictionary. 'name' is the canonical form shown to users; 'aliases' are extra spellings matched case-insensitively (the canonical name is always matched too). Add new skills here rather than in code. Avoid aliases that are common English words: 'go' would match 'going', 'R' and 'C' appear everywhere. For those, list only unambiguous aliases. 'tags' are capability groups: two skills sharing a tag are treated as related evidence, which is how a missing skill becomes a partial match rather than a flat gap.",
   "skills": [
     {
       "name": "Python",
@@ -46,6 +46,9 @@
       "aliases": [
         "js",
         "ecmascript"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -53,6 +56,9 @@
       "category": "Language",
       "aliases": [
         "ts"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -122,6 +128,9 @@
         "reactjs",
         "react.js",
         "react js"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -130,6 +139,9 @@
       "aliases": [
         "nextjs",
         "next js"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -138,6 +150,9 @@
       "aliases": [
         "angularjs",
         "angular.js"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -146,18 +161,27 @@
       "aliases": [
         "vuejs",
         "vue"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
       "name": "Redux",
       "category": "Frontend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "frontend"
+      ]
     },
     {
       "name": "HTML",
       "category": "Frontend",
       "aliases": [
         "html5"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -165,6 +189,9 @@
       "category": "Frontend",
       "aliases": [
         "css3"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
@@ -173,17 +200,26 @@
       "aliases": [
         "tailwind",
         "tailwindcss"
+      ],
+      "tags": [
+        "frontend"
       ]
     },
     {
       "name": "Bootstrap",
       "category": "Frontend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "frontend"
+      ]
     },
     {
       "name": "Vite",
       "category": "Frontend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "frontend"
+      ]
     },
     {
       "name": "Node.js",
@@ -191,6 +227,9 @@
       "aliases": [
         "nodejs",
         "node js"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
@@ -199,6 +238,9 @@
       "aliases": [
         "expressjs",
         "express js"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
@@ -206,23 +248,35 @@
       "category": "Backend",
       "aliases": [
         "fast api"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
       "name": "Django",
       "category": "Backend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "backend"
+      ]
     },
     {
       "name": "Flask",
       "category": "Backend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "backend"
+      ]
     },
     {
       "name": "Spring Boot",
       "category": "Backend",
       "aliases": [
         "springboot"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
@@ -233,12 +287,18 @@
         "dot net",
         "asp.net",
         "aspnet"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
       "name": "GraphQL",
       "category": "Backend",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "backend"
+      ]
     },
     {
       "name": "REST API",
@@ -246,6 +306,9 @@
       "aliases": [
         "rest apis",
         "restful"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
@@ -253,18 +316,28 @@
       "category": "Backend",
       "aliases": [
         "microservice"
+      ],
+      "tags": [
+        "backend"
       ]
     },
     {
       "name": "SQL",
       "category": "Database",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "database",
+        "data"
+      ]
     },
     {
       "name": "MySQL",
       "category": "Database",
       "aliases": [
         "my sql"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
@@ -273,6 +346,9 @@
       "aliases": [
         "postgres",
         "psql"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
@@ -280,23 +356,35 @@
       "category": "Database",
       "aliases": [
         "mongo"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
       "name": "Redis",
       "category": "Database",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "database"
+      ]
     },
     {
       "name": "SQLite",
       "category": "Database",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "database"
+      ]
     },
     {
       "name": "Oracle",
       "category": "Database",
       "aliases": [
         "oracle db"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
@@ -304,6 +392,9 @@
       "category": "Database",
       "aliases": [
         "elastic search"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
@@ -311,6 +402,9 @@
       "category": "Database",
       "aliases": [
         "dynamo db"
+      ],
+      "tags": [
+        "database"
       ]
     },
     {
@@ -318,6 +412,9 @@
       "category": "Cloud",
       "aliases": [
         "amazon web services"
+      ],
+      "tags": [
+        "cloud"
       ]
     },
     {
@@ -325,6 +422,9 @@
       "category": "Cloud",
       "aliases": [
         "microsoft azure"
+      ],
+      "tags": [
+        "cloud"
       ]
     },
     {
@@ -333,6 +433,9 @@
       "aliases": [
         "gcp",
         "google cloud platform"
+      ],
+      "tags": [
+        "cloud"
       ]
     },
     {
@@ -341,6 +444,9 @@
       "aliases": [
         "dockerize",
         "containerization"
+      ],
+      "tags": [
+        "devops"
       ]
     },
     {
@@ -348,6 +454,9 @@
       "category": "DevOps",
       "aliases": [
         "k8s"
+      ],
+      "tags": [
+        "devops"
       ]
     },
     {
@@ -357,49 +466,76 @@
         "ci cd",
         "continuous integration",
         "continuous deployment"
+      ],
+      "tags": [
+        "devops"
       ]
     },
     {
       "name": "Jenkins",
       "category": "DevOps",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "devops"
+      ]
     },
     {
       "name": "Terraform",
       "category": "DevOps",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "devops"
+      ]
     },
     {
       "name": "Nginx",
       "category": "DevOps",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "devops"
+      ]
     },
     {
       "name": "Linux",
       "category": "DevOps",
       "aliases": [
         "unix"
+      ],
+      "tags": [
+        "devops"
       ]
     },
     {
       "name": "Git",
       "category": "Tools",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "process"
+      ]
     },
     {
       "name": "GitHub",
       "category": "Tools",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "process"
+      ]
     },
     {
       "name": "GitLab",
       "category": "Tools",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "process"
+      ]
     },
     {
       "name": "Jira",
       "category": "Tools",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "process"
+      ]
     },
     {
       "name": "Postman",
@@ -416,18 +552,27 @@
       "category": "Data / ML",
       "aliases": [
         "ml"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
       "name": "Deep Learning",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "ml"
+      ]
     },
     {
       "name": "NLP",
       "category": "Data / ML",
       "aliases": [
         "natural language processing"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
@@ -435,6 +580,9 @@
       "category": "Data / ML",
       "aliases": [
         "opencv"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
@@ -443,6 +591,9 @@
       "aliases": [
         "sklearn",
         "scikit learn"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
@@ -450,6 +601,9 @@
       "category": "Data / ML",
       "aliases": [
         "tensor flow"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
@@ -457,59 +611,89 @@
       "category": "Data / ML",
       "aliases": [
         "torch"
+      ],
+      "tags": [
+        "ml"
       ]
     },
     {
       "name": "Keras",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "ml"
+      ]
     },
     {
       "name": "pandas",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "data"
+      ]
     },
     {
       "name": "NumPy",
       "category": "Data / ML",
       "aliases": [
         "numpy"
+      ],
+      "tags": [
+        "data"
       ]
     },
     {
       "name": "Matplotlib",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "data"
+      ]
     },
     {
       "name": "Power BI",
       "category": "Data / ML",
       "aliases": [
         "powerbi"
+      ],
+      "tags": [
+        "data"
       ]
     },
     {
       "name": "Tableau",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "data"
+      ]
     },
     {
       "name": "Apache Spark",
       "category": "Data / ML",
       "aliases": [
         "pyspark"
+      ],
+      "tags": [
+        "data"
       ]
     },
     {
       "name": "Hadoop",
       "category": "Data / ML",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "data"
+      ]
     },
     {
       "name": "Data Analysis",
       "category": "Data / ML",
       "aliases": [
         "data analytics"
+      ],
+      "tags": [
+        "data"
       ]
     },
     {
@@ -518,6 +702,9 @@
       "aliases": [
         "scrum",
         "kanban"
+      ],
+      "tags": [
+        "process"
       ]
     },
     {
@@ -528,12 +715,18 @@
         "pytest",
         "jest",
         "junit"
+      ],
+      "tags": [
+        "testing"
       ]
     },
     {
       "name": "System Design",
       "category": "Practice",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "fundamentals"
+      ]
     },
     {
       "name": "Data Structures",
@@ -541,12 +734,18 @@
       "aliases": [
         "dsa",
         "data structures and algorithms"
+      ],
+      "tags": [
+        "fundamentals"
       ]
     },
     {
       "name": "Algorithms",
       "category": "Practice",
-      "aliases": []
+      "aliases": [],
+      "tags": [
+        "fundamentals"
+      ]
     },
     {
       "name": "OOP",
@@ -554,6 +753,9 @@
       "aliases": [
         "object oriented programming",
         "object-oriented"
+      ],
+      "tags": [
+        "fundamentals"
       ]
     }
   ]

@@ -60,6 +60,11 @@ class Settings(BaseSettings):
     KEYWORD_MATCH_WEIGHT: float = 0.2
     TOP_KEYWORDS: int = 15
 
+    # A required skill the resume does not name, but shows related experience
+    # for, earns this fraction of a point. 0 would ignore related work
+    # entirely; 1 would treat Kubernetes as if it were Docker.
+    PARTIAL_SKILL_CREDIT: float = 0.5
+
     # Phase 9, optional. Reported alongside TF-IDF similarity, never folded into
     # the overall score: that would make the score unexplainable and would
     # silently shift it relative to saved history.

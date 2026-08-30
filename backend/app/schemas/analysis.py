@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class AnalyseRequest(BaseModel):
     resume_id: int
     job_title: str = Field(default="", max_length=200)
+    company: str = Field(default="", max_length=160)
     job_description: str = Field(min_length=50, max_length=20_000)
 
 
@@ -17,6 +18,28 @@ class SkillItem(BaseModel):
 class KeywordItem(BaseModel):
     term: str
     found: bool
+
+
+class PartialSkillItem(BaseModel):
+    """A required skill backed by related experience rather than named directly."""
+
+    name: str
+    category: str
+    evidence: list[str]
+    shared_tags: list[str]
+
+
+class JobRequirementsItem(BaseModel):
+    role: str
+    required_skills: list[SkillItem]
+    preferred_skills: list[SkillItem]
+    soft_skills: list[str]
+    education: str
+    experience: str
+    min_years: int | None
+    confidence: dict[str, bool] = Field(
+        description="Which fields were found in the text rather than left blank"
+    )
 
 
 class RecommendationItem(BaseModel):
@@ -53,11 +76,13 @@ class AnalysisDetail(AnalysisSummary):
     weights: dict[str, float]
 
     matched_skills: list[SkillItem]
+    partial_skills: list[PartialSkillItem]
     missing_skills: list[SkillItem]
     extra_skills: list[SkillItem]
     keywords: list[KeywordItem]
     sections: dict[str, bool]
     recommendations: list[RecommendationItem]
+    requirements: JobRequirementsItem | None = None
 
 
 class JobSummary(BaseModel):
@@ -65,8 +90,13 @@ class JobSummary(BaseModel):
 
     id: int
     title: str
+    company: str = ""
+    role: str = ""
     created_at: datetime
 
 
 class JobDetail(JobSummary):
     description: str
+    company: str
+    role: str
+    parsed: dict = Field(default_factory=dict)

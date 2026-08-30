@@ -9,6 +9,7 @@ export function Analyze() {
   const [resumes, setResumes] = useState([])
   const [resumeId, setResumeId] = useState('')
   const [jobTitle, setJobTitle] = useState('')
+  const [company, setCompany] = useState('')
   const [jobDescription, setJobDescription] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
@@ -30,7 +31,7 @@ export function Analyze() {
     setError('')
     setLoading(true)
     try {
-      setResult(await analysisApi.create(resumeId, jobTitle, jobDescription))
+      setResult(await analysisApi.create(resumeId, jobTitle, jobDescription, company))
     } catch (e) {
       setError(errorMessage(e, 'Analysis failed'))
     } finally {
@@ -83,6 +84,13 @@ export function Analyze() {
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               placeholder="Software Engineer Intern"
+            />
+
+            <Field
+              label="Company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="Optional"
             />
 
           </div>

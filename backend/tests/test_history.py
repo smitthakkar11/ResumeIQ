@@ -199,3 +199,77 @@ class TestOwnership:
             ("get", "/api/jobs/1"),
         ]:
             assert getattr(client, method)(path).status_code == 401, path
+
+
+@requires_db
+class TestJobDescriptionIntelligence:
+    """Phase A: parsed requirements are stored on the job row and returned."""
+
+    STRUCTURED = (
+        "Backend Engineer\n"
+        "Requirements\n"
+        "- 2+ years with Python and MySQL\n"
+        "- Bachelor's degree required\n"
+        "Preferred qualifications\n"
+        "- Docker experience\n"
+    )
+
+    def test_analysis_returns_parsed_requirements(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = upload(client, auth_headers)
+        body = run_analysis(client, auth_headers, resume_id, self.STRUCTURED, "Backend")
+
+        req = body["requirements"]
+        assert req["role"] == "Backend Engineer"
+        assert req["education"] == "Bachelor's"
+        assert req["min_years"] == 2
+        assert "Docker" in {s["name"] for s in req["preferred_skills"]}
+
+    def test_requirements_survive_a_reload(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        """Stored on the job row, so reopening the analysis still shows them."""
+        resume_id = upload(client, auth_headers)
+        created = run_analysis(client, auth_headers, resume_id, self.STRUCTURED, "Backend")
+
+        fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
+        assert fetched["requirements"]["role"] == "Backend Engineer"
+
+    def test_company_is_stored_on_the_job(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = upload(client, auth_headers)
+        response = client.post(
+            "/api/analyses",
+            headers=auth_headers,
+            json={
+                "resume_id": resume_id,
+                "job_title": "Backend",
+                "company": "Acme Corp",
+                "job_description": self.STRUCTURED,
+            },
+        )
+        assert response.status_code == 201
+
+        job_id = response.json()["job_description_id"]
+        job = client.get(f"/api/jobs/{job_id}", headers=auth_headers).json()
+        assert job["company"] == "Acme Corp"
+        assert job["role"] == "Backend Engineer"
+        assert job["parsed"]["education"] == "Bachelor's"
+
+    def test_partial_skills_are_persisted(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = upload(client, auth_headers)
+        created = run_analysis(
+            client, auth_headers, resume_id,
+            "Requirements: Django and Python are essential for this backend role.",
+            "Backend",
+        )
+        # The test resume names FastAPI, which shares the "backend" tag.
+        partial = {p["name"] for p in created["partial_skills"]}
+        assert "Django" in partial
+
+        fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
+        assert {p["name"] for p in fetched["partial_skills"]} == partial

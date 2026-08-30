@@ -1,4 +1,6 @@
-from sqlalchemy import ForeignKey, Index, String
+from typing import Any
+
+from sqlalchemy import JSON, ForeignKey, Index, String
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,3 +21,11 @@ class JobDescription(Base, TimestampMixin):
     title: Mapped[str] = mapped_column(String(200), nullable=False, default="")
     description: Mapped[str] = mapped_column(LONGTEXT, nullable=False)
     content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+
+    # Supplied by the user; used by application tracking.
+    company: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    # Extracted from the text by jd_parser, not typed by the user.
+    role: Mapped[str] = mapped_column(String(160), nullable=False, default="")
+    # required/preferred skills, soft skills, education, experience. JSON
+    # because we only ever read it back whole to render one page.
+    parsed: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)

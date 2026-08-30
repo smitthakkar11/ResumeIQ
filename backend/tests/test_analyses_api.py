@@ -35,8 +35,13 @@ class TestAnalyseEndpoint:
         assert body["job_title"] == "SWE Intern"
         assert 0 <= body["match_score"] <= 100
         assert {s["name"] for s in body["matched_skills"]} >= {"Python", "React", "MySQL"}
-        assert {s["name"] for s in body["missing_skills"]} >= {"Docker", "Kubernetes"}
+        assert "Docker" in {s["name"] for s in body["missing_skills"]}
         assert any(k["term"] == "docker" and not k["found"] for k in body["keywords"])
+
+        # "Kubernetes is a plus" makes it preferred, so it must NOT be counted
+        # as a missing requirement — a nice-to-have cannot drag the score down.
+        assert "Kubernetes" not in {s["name"] for s in body["missing_skills"]}
+        assert "Kubernetes" in {s["name"] for s in body["requirements"]["preferred_skills"]}
 
     def test_requires_authentication(self, client: TestClient) -> None:
         response = client.post(

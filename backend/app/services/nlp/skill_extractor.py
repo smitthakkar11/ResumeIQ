@@ -7,7 +7,7 @@ C++, C#, .NET and Node.js are still intact when we look for them.
 import functools
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 SKILLS_FILE = Path(__file__).parent / "skills.json"
@@ -23,6 +23,13 @@ RIGHT = r"(?![a-z0-9+#])(?!\.[a-z0-9])"
 class Skill:
     category: str
     name: str
+    # Capability groups this skill belongs to (backend, cloud, ml...). Two
+    # skills sharing a tag count as related evidence. Excluded from ordering
+    # and equality so a Skill is still identified by category + name.
+    tags: frozenset[str] = field(default=frozenset(), compare=False)
+
+    def is_related_to(self, other: "Skill") -> bool:
+        return bool(self.tags & other.tags)
 
 
 @functools.lru_cache(maxsize=1)
@@ -41,7 +48,10 @@ def _compiled() -> list[tuple[Skill, re.Pattern[str]]]:
             re.escape(t.lower()) for t in sorted(set(terms), key=len, reverse=True)
         )
         pattern = re.compile(rf"{LEFT}(?:{alternatives}){RIGHT}")
-        compiled.append((Skill(entry["category"], entry["name"]), pattern))
+        skill = Skill(
+            entry["category"], entry["name"], frozenset(entry.get("tags", []))
+        )
+        compiled.append((skill, pattern))
 
     return compiled
 

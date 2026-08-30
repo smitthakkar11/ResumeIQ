@@ -1,4 +1,6 @@
 import { ComponentBars } from '@/components/ComponentBars'
+import { JobIntelligence } from '@/components/JobIntelligence'
+import { PartialSkills } from '@/components/PartialSkills'
 import { Recommendations } from '@/components/Recommendations'
 import { ScoreMeter } from '@/components/ScoreMeter'
 import { SectionChecklist } from '@/components/SectionChecklist'
@@ -42,8 +44,8 @@ export function AnalysisReport({ result, divider = false }) {
         </div>
       )}
 
-      {/* ---- skills ---- */}
-      <div className="mt-12 grid gap-10 lg:grid-cols-2">
+      {/* ---- skill gap: have / partial / missing ---- */}
+      <div className="mt-12 grid gap-10 lg:grid-cols-3">
         <section>
           <SectionHead
             right={<span className="num text-xs text-ink-400">{result.matched_skills.length}</span>}
@@ -51,6 +53,17 @@ export function AnalysisReport({ result, divider = false }) {
             Matched skills
           </SectionHead>
           <SkillBadges skills={result.matched_skills} tone="matched" />
+        </section>
+
+        <section>
+          <SectionHead
+            right={
+              <span className="num text-xs text-ink-400">{result.partial_skills.length}</span>
+            }
+          >
+            Partial matches
+          </SectionHead>
+          <PartialSkills partials={result.partial_skills} />
         </section>
 
         <section>
@@ -95,6 +108,13 @@ export function AnalysisReport({ result, divider = false }) {
           ))}
         </div>
       </section>
+
+      {result.requirements && (
+        <section className="mt-12">
+          <SectionHead>What the job asks for</SectionHead>
+          <JobIntelligence requirements={result.requirements} />
+        </section>
+      )}
 
       {/* ---- structure + recommendations ---- */}
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.6fr]">

@@ -48,6 +48,7 @@ class Analysis(Base, TimestampMixin):
     # serialise what you only display.
     weights: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
     matched_skills: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
+    partial_skills: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
     missing_skills: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
     extra_skills: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
     keywords: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)

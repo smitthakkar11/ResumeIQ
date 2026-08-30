@@ -107,6 +107,18 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  */
 
 /**
+ * @typedef {Object} JobRequirements
+ * @property {string} role
+ * @property {ExtractedSkill[]} required_skills
+ * @property {ExtractedSkill[]} preferred_skills
+ * @property {string[]} soft_skills
+ * @property {string} education
+ * @property {string} experience
+ * @property {number|null} min_years
+ * @property {Object.<string, boolean>} confidence
+ */
+
+/**
  * @typedef {Object} Analysis
  * @property {number}  id
  * @property {string}  job_title
@@ -119,6 +131,8 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  * @property {number}  keyword_match     0-100
  * @property {Object.<string, number>}  weights
  * @property {ExtractedSkill[]} matched_skills
+ * @property {{name: string, category: string, evidence: string[], shared_tags: string[]}[]} partial_skills
+ * @property {JobRequirements|null} requirements
  * @property {ExtractedSkill[]} missing_skills
  * @property {ExtractedSkill[]} extra_skills
  * @property {{term: string, found: boolean}[]} keywords
@@ -179,11 +193,12 @@ export const resumeApi = {
 }
 
 export const analysisApi = {
-  create: (resumeId, jobTitle, jobDescription) =>
+  create: (resumeId, jobTitle, jobDescription, company = '') =>
     api
       .post('/analyses', {
         resume_id: resumeId,
         job_title: jobTitle,
+        company,
         job_description: jobDescription,
       })
       .then((r) => r.data),
