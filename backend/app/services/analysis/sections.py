@@ -58,3 +58,37 @@ def detect_sections(text: str) -> dict[str, bool]:
         "Projects", "Skills", "Certifications", "Achievements",
     ]
     return {section: found[section] for section in order}
+
+
+def section_text(text: str, section: str) -> str:
+    """The lines belonging to one section, or "" if it was not detected.
+
+    Runs from the matching heading to the next heading of any section. Needed
+    because "2022 - 2026" under Education is a degree, not work experience,
+    and counting it as experience would be plainly wrong.
+    """
+    keywords = SECTION_KEYWORDS.get(section)
+    if not keywords:
+        return ""
+
+    all_keywords = [k for words in SECTION_KEYWORDS.values() for k in words]
+    collected: list[str] = []
+    inside = False
+
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+
+        is_heading = len(line) <= MAX_HEADING_CHARS
+        low = line.lower()
+
+        if is_heading and any(k in low for k in keywords):
+            inside = True
+            continue
+        if inside and is_heading and any(k in low for k in all_keywords):
+            break  # the next section has started
+        if inside:
+            collected.append(line)
+
+    return "\n".join(collected)

@@ -137,20 +137,34 @@ class TestSkillMatching:
 class TestCompositeScore:
     def test_components_combine_with_the_configured_weights(self) -> None:
         r = analyse(STRONG_RESUME, JOB)
-        expected = (
-            r.text_similarity * r.weights["text_similarity"]
-            + r.skill_match * r.weights["skill_match"]
-            + r.keyword_match * r.weights["keyword_match"]
-        )
-        assert r.overall_score == pytest.approx(expected, abs=0.15)
+        values = {
+            "text_similarity": r.text_similarity,
+            "skill_match": r.skill_match,
+            "keyword_match": r.keyword_match,
+            "experience_match": r.experience_match,
+            "education_match": r.education_match,
+        }
+        expected = sum(values[name] * weight for name, weight in r.weights.items())
+        assert r.overall_score == pytest.approx(expected, abs=0.2)
 
     def test_weights_sum_to_one(self) -> None:
-        assert sum(analyse(STRONG_RESUME, JOB).weights.values()) == pytest.approx(1.0)
+        # Reported weights are rounded to 3dp for display, so with five
+        # components the sum can drift by a thousandth.
+        total = sum(analyse(STRONG_RESUME, JOB).weights.values())
+        assert total == pytest.approx(1.0, abs=0.005)
 
     def test_configured_weights_are_the_documented_ones(self) -> None:
-        assert settings.TEXT_SIMILARITY_WEIGHT == pytest.approx(0.4)
-        assert settings.SKILL_MATCH_WEIGHT == pytest.approx(0.4)
-        assert settings.KEYWORD_MATCH_WEIGHT == pytest.approx(0.2)
+        assert settings.TEXT_SIMILARITY_WEIGHT == pytest.approx(0.30)
+        assert settings.SKILL_MATCH_WEIGHT == pytest.approx(0.35)
+        assert settings.KEYWORD_MATCH_WEIGHT == pytest.approx(0.15)
+        assert settings.EXPERIENCE_MATCH_WEIGHT == pytest.approx(0.12)
+        assert settings.EDUCATION_MATCH_WEIGHT == pytest.approx(0.08)
+
+    def test_credential_weights_are_small(self) -> None:
+        """Experience and education are estimates read from free text, so a
+        misread date must not be able to swing the headline score."""
+        assert settings.EXPERIENCE_MATCH_WEIGHT < settings.SKILL_MATCH_WEIGHT / 2
+        assert settings.EDUCATION_MATCH_WEIGHT < settings.SKILL_MATCH_WEIGHT / 2
 
     def test_a_strong_resume_outscores_a_weak_one(self) -> None:
         assert analyse(STRONG_RESUME, JOB).overall_score > analyse(WEAK_RESUME, JOB).overall_score

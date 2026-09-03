@@ -273,3 +273,51 @@ class TestJobDescriptionIntelligence:
 
         fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
         assert {p["name"] for p in fetched["partial_skills"]} == partial
+
+
+@requires_db
+class TestBlockersArePersisted:
+    """Phase C: blockers and credential detail are part of the snapshot."""
+
+    JOB = (
+        "Backend Engineer\n"
+        "Requirements\n"
+        "- 5+ years with Python, Docker and Kubernetes\n"
+        "- Master's degree in Computer Science\n"
+    )
+
+    def test_blockers_survive_a_reload(self, client: TestClient, auth_headers: dict) -> None:
+        resume_id = upload(client, auth_headers)
+        created = run_analysis(client, auth_headers, resume_id, self.JOB, "Backend")
+
+        assert created["blockers"], "a demanding job should produce blockers"
+        assert all(b["fix"] for b in created["blockers"])
+
+        fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
+        assert fetched["blockers"] == created["blockers"]
+
+    def test_credential_scores_and_details_survive_a_reload(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = upload(client, auth_headers)
+        created = run_analysis(client, auth_headers, resume_id, self.JOB, "Backend")
+
+        assert created["education_match"] is not None
+        assert created["experience_detail"]
+
+        fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
+        assert fetched["experience_detail"] == created["experience_detail"]
+        assert fetched["education_match"] == created["education_match"]
+
+    def test_a_posting_with_no_stated_requirement_stores_null(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        """Not measurable must not be recorded as a failed requirement."""
+        resume_id = upload(client, auth_headers)
+        created = run_analysis(
+            client, auth_headers, resume_id,
+            "We are looking for someone to write Python and work with MySQL daily.",
+            "Vague",
+        )
+        assert created["experience_match"] is None
+        assert created["education_match"] is None

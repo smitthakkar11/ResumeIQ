@@ -139,6 +139,11 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  *                                              embedding model is unavailable
  * @property {number|null} skill_match    null when the job names no known skills
  * @property {number}  keyword_match     0-100
+ * @property {number|null} experience_match  null when the posting states no requirement
+ * @property {number|null} education_match   null when the posting states no requirement
+ * @property {string}  experience_detail
+ * @property {string}  education_detail
+ * @property {{title: string, detail: string, fix: string, cost: number, category: string}[]} blockers
  * @property {Object.<string, number>}  weights
  * @property {ExtractedSkill[]} matched_skills
  * @property {{name: string, category: string, evidence: string[], shared_tags: string[]}[]} partial_skills

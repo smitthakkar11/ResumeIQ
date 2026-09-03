@@ -42,6 +42,14 @@ class Analysis(Base, TimestampMixin):
     semantic_similarity: Mapped[float | None] = mapped_column(Float, nullable=True)
     skill_match: Mapped[float | None] = mapped_column(Float, nullable=True)
     keyword_match: Mapped[float] = mapped_column(Float, nullable=False)
+    # Null when the posting stated no requirement we could read.
+    experience_match: Mapped[float | None] = mapped_column(Float, nullable=True)
+    education_match: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # How each credential score was arrived at, shown under the bar. Stored
+    # rather than recomputed, so a reopened analysis explains itself the same way.
+    experience_detail: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    education_detail: Mapped[str] = mapped_column(String(200), nullable=False, default="")
+    blockers: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
 
     # Resume quality, independent of this job. Stored so history can show how
     # the resume itself improved across versions.

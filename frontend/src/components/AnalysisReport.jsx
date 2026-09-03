@@ -1,3 +1,4 @@
+import { Blockers } from '@/components/Blockers'
 import { ComponentBars } from '@/components/ComponentBars'
 import { JobIntelligence } from '@/components/JobIntelligence'
 import { PartialSkills } from '@/components/PartialSkills'
@@ -38,6 +39,13 @@ export function AnalysisReport({ result, divider = false }) {
           </p>
         </div>
       </div>
+
+      {result.blockers?.length > 0 && (
+        <section className="mt-12">
+          <SectionHead>What is holding you back</SectionHead>
+          <Blockers blockers={result.blockers} />
+        </section>
+      )}
 
       {hasSemantic && (
         <div className="mt-10">

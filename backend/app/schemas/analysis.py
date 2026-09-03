@@ -42,6 +42,16 @@ class QualityScoreResponse(BaseModel):
     weights: dict[str, float]
 
 
+class BlockerItem(BaseModel):
+    """One thing costing the candidate points, with what it costs."""
+
+    title: str
+    detail: str
+    fix: str
+    cost: float = Field(description="Estimated points off the overall score")
+    category: str
+
+
 class PartialSkillItem(BaseModel):
     """A required skill backed by related experience rather than named directly."""
 
@@ -96,7 +106,12 @@ class AnalysisDetail(AnalysisSummary):
         default=None, description="null when the job description names no skills we recognise"
     )
     keyword_match: float
+    experience_match: float | None = None
+    education_match: float | None = None
+    experience_detail: str = ""
+    education_detail: str = ""
     weights: dict[str, float]
+    blockers: list[BlockerItem] = Field(default_factory=list)
 
     resume_quality_score: float | None = None
     quality_breakdown: list[QualityComponentItem] = Field(default_factory=list)

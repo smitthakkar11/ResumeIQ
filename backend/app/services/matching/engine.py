@@ -12,12 +12,14 @@ from dataclasses import dataclass, field
 
 from app.core.config import settings
 from app.services.analysis.recommendations import Recommendation, build_recommendations
+from app.services.analysis.blockers import Blocker, build_blockers
 from app.services.analysis.quality_score import QualityScore, score_resume
 from app.services.analysis.resume_features import extract_features
+from app.services.matching.credentials import match_education, match_experience
 from app.services.matching.semantic import semantic_similarity
 from app.services.matching.similarity import resume_token_set, text_similarity, top_keywords
 from app.services.nlp.jd_parser import JobRequirements, parse_job_description
-from app.services.nlp.skill_extractor import Skill, extract_skills
+from app.services.nlp.skill_extractor import Skill, count_skills, extract_skills
 
 
 @dataclass
@@ -53,6 +55,11 @@ class MatchResult:
     semantic_similarity: float | None
     skill_match: float | None  # None when the job description names no known skills
     keyword_match: float
+    # None when the posting states no requirement we could read.
+    experience_match: float | None = None
+    education_match: float | None = None
+    experience_detail: str = ""
+    education_detail: str = ""
     matched_skills: list[Skill] = field(default_factory=list)
     partial_skills: list[PartialSkill] = field(default_factory=list)
     missing_skills: list[Skill] = field(default_factory=list)
@@ -62,6 +69,7 @@ class MatchResult:
     requirements: JobRequirements | None = None
     sections: dict[str, bool] = field(default_factory=dict)
     recommendations: list[Recommendation] = field(default_factory=list)
+    blockers: list[Blocker] = field(default_factory=list)
     quality: QualityScore | None = None
 
 
@@ -114,13 +122,21 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
         sum(k.found for k in keywords) / len(keywords) if keywords else 0.0
     )
 
-    # --- 4. Weighted total --------------------------------------------------
+    # --- 4. Experience and education ---------------------------------------
+    experience = match_experience(resume_text, requirements.min_years)
+    education = match_education(resume_text, requirements.education)
+
+    # --- 5. Weighted total --------------------------------------------------
     components = {
         "text_similarity": (similarity, settings.TEXT_SIMILARITY_WEIGHT),
         "keyword_match": (keyword_ratio, settings.KEYWORD_MATCH_WEIGHT),
     }
     if skill_ratio is not None:
         components["skill_match"] = (skill_ratio, settings.SKILL_MATCH_WEIGHT)
+    if experience.score is not None:
+        components["experience_match"] = (experience.score / 100, settings.EXPERIENCE_MATCH_WEIGHT)
+    if education.score is not None:
+        components["education_match"] = (education.score / 100, settings.EDUCATION_MATCH_WEIGHT)
 
     # If the job description names no recognised skills, that component is
     # dropped and the remaining weights are rescaled. Scoring it as 0 would
@@ -132,7 +148,7 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
         else 0.0
     )
 
-    # --- 5. Structure and advice -------------------------------------------
+    # --- 6. Structure and advice -------------------------------------------
     features = extract_features(resume_text)
     sections = features.sections
     recommendations = build_recommendations(
@@ -144,14 +160,37 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
         keyword_match=_pct(keyword_ratio),
     )
 
+    # --- 7. What is costing the most points --------------------------------
+    normalised = {name: w / total_weight for name, (_, w) in components.items()}
+    blockers = build_blockers(
+        weights=normalised,
+        missing_skills=[s.name for s in sorted(missing)],
+        partial_skills=[(p.skill.name, [e.name for e in p.evidence]) for p in partials],
+        required_count=len(required),
+        jd_skill_mentions=count_skills(job_text),
+        absent_keywords=[k.term for k in keywords if not k.found],
+        keyword_match=_pct(keyword_ratio),
+        text_similarity=_pct(similarity),
+        experience_match=experience.score,
+        experience_detail=experience.detail,
+        education_match=education.score,
+        education_detail=education.detail,
+        partial_credit=settings.PARTIAL_SKILL_CREDIT,
+    )
+
     return MatchResult(
         requirements=requirements,
+        blockers=blockers,
         quality=score_resume(resume_text),
         overall_score=_pct(overall),
         text_similarity=_pct(similarity),
         semantic_similarity=_pct(semantic) if semantic is not None else None,
         skill_match=_pct(skill_ratio) if skill_ratio is not None else None,
         keyword_match=_pct(keyword_ratio),
+        experience_match=experience.score,
+        education_match=education.score,
+        experience_detail=experience.detail,
+        education_detail=education.detail,
         matched_skills=sorted(matched),
         partial_skills=sorted(partials, key=lambda p: (p.skill.category, p.skill.name)),
         missing_skills=sorted(missing),

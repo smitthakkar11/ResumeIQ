@@ -114,6 +114,15 @@ def create_analysis(
         semantic_similarity=result.semantic_similarity,
         skill_match=result.skill_match,
         keyword_match=result.keyword_match,
+        experience_match=result.experience_match,
+        education_match=result.education_match,
+        experience_detail=result.experience_detail[:200],
+        education_detail=result.education_detail[:200],
+        blockers=[
+            {"title": b.title, "detail": b.detail, "fix": b.fix,
+             "cost": b.cost, "category": b.category}
+            for b in result.blockers
+        ],
         weights=result.weights,
         resume_quality_score=result.quality.overall if result.quality else None,
         quality_breakdown=[

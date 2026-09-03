@@ -54,10 +54,17 @@ class Settings(BaseSettings):
     def google_oauth_configured(self) -> bool:
         return bool(self.GOOGLE_CLIENT_ID and self.GOOGLE_CLIENT_SECRET)
 
-    # --- Match score weights (must sum to 1.0) ---
-    TEXT_SIMILARITY_WEIGHT: float = 0.4
-    SKILL_MATCH_WEIGHT: float = 0.4
-    KEYWORD_MATCH_WEIGHT: float = 0.2
+    # --- Match score weights ---
+    # Rebalanced when experience and education were added. Those two are
+    # estimates read out of free text, so they carry deliberately small
+    # weights: a misread date should not swing the headline score.
+    # Any component the posting does not support is dropped and the rest
+    # rescaled, so these need not sum to exactly 1.
+    TEXT_SIMILARITY_WEIGHT: float = 0.30
+    SKILL_MATCH_WEIGHT: float = 0.35
+    KEYWORD_MATCH_WEIGHT: float = 0.15
+    EXPERIENCE_MATCH_WEIGHT: float = 0.12
+    EDUCATION_MATCH_WEIGHT: float = 0.08
     TOP_KEYWORDS: int = 15
 
     # A required skill the resume does not name, but shows related experience
