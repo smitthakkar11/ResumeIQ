@@ -3,7 +3,13 @@ from sqlalchemy import func, select
 
 from app.api.deps import CurrentUser, DbSession
 from app.models.resume import Resume
+from app.schemas.analysis import (
+    QualityCheckItem,
+    QualityComponentItem,
+    QualityScoreResponse,
+)
 from app.schemas.resume import ExtractedSkill, ResumeDetail, ResumeSkills, ResumeSummary
+from app.services.analysis.quality_score import score_resume
 from app.services.nlp.skill_extractor import extract_skills
 from app.services.resume.pdf_extractor import MAX_FILE_BYTES, PdfError, extract_text
 
@@ -80,6 +86,34 @@ def get_resume_skills(resume_id: int, db: DbSession, user: CurrentUser) -> Resum
         filename=resume.filename,
         skills=[ExtractedSkill(name=s.name, category=s.category) for s in found],
         total=len(found),
+    )
+
+
+@router.get("/{resume_id}/quality", response_model=QualityScoreResponse)
+def get_resume_quality(resume_id: int, db: DbSession, user: CurrentUser) -> QualityScoreResponse:
+    """How strong this resume is on its own, with no job description involved."""
+    resume = _get_owned(db, resume_id, user)
+    quality = score_resume(resume.extracted_text)
+
+    return QualityScoreResponse(
+        resume_id=resume.id,
+        filename=resume.filename,
+        overall=quality.overall,
+        components=[
+            QualityComponentItem(
+                key=c.key,
+                label=c.label,
+                score=c.score,
+                checks=[
+                    QualityCheckItem(
+                        label=k.label, earned=k.earned, maximum=k.maximum, detail=k.detail
+                    )
+                    for k in c.checks
+                ],
+            )
+            for c in quality.components
+        ],
+        weights=quality.weights,
     )
 
 

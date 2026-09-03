@@ -20,6 +20,28 @@ class KeywordItem(BaseModel):
     found: bool
 
 
+class QualityCheckItem(BaseModel):
+    label: str
+    earned: float
+    maximum: float
+    detail: str
+
+
+class QualityComponentItem(BaseModel):
+    key: str
+    label: str
+    score: float
+    checks: list[QualityCheckItem]
+
+
+class QualityScoreResponse(BaseModel):
+    resume_id: int
+    filename: str
+    overall: float
+    components: list[QualityComponentItem]
+    weights: dict[str, float]
+
+
 class PartialSkillItem(BaseModel):
     """A required skill backed by related experience rather than named directly."""
 
@@ -56,6 +78,7 @@ class AnalysisSummary(BaseModel):
     job_title: str
     resume_filename: str
     match_score: float
+    resume_quality_score: float | None = None
     created_at: datetime
 
 
@@ -74,6 +97,9 @@ class AnalysisDetail(AnalysisSummary):
     )
     keyword_match: float
     weights: dict[str, float]
+
+    resume_quality_score: float | None = None
+    quality_breakdown: list[QualityComponentItem] = Field(default_factory=list)
 
     matched_skills: list[SkillItem]
     partial_skills: list[PartialSkillItem]

@@ -115,6 +115,20 @@ def create_analysis(
         skill_match=result.skill_match,
         keyword_match=result.keyword_match,
         weights=result.weights,
+        resume_quality_score=result.quality.overall if result.quality else None,
+        quality_breakdown=[
+            {
+                "key": c.key,
+                "label": c.label,
+                "score": c.score,
+                "checks": [
+                    {"label": k.label, "earned": k.earned,
+                     "maximum": k.maximum, "detail": k.detail}
+                    for k in c.checks
+                ],
+            }
+            for c in (result.quality.components if result.quality else [])
+        ],
         matched_skills=as_dicts(result.matched_skills),
         partial_skills=[
             {

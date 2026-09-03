@@ -12,7 +12,8 @@ from dataclasses import dataclass, field
 
 from app.core.config import settings
 from app.services.analysis.recommendations import Recommendation, build_recommendations
-from app.services.analysis.sections import detect_sections
+from app.services.analysis.quality_score import QualityScore, score_resume
+from app.services.analysis.resume_features import extract_features
 from app.services.matching.semantic import semantic_similarity
 from app.services.matching.similarity import resume_token_set, text_similarity, top_keywords
 from app.services.nlp.jd_parser import JobRequirements, parse_job_description
@@ -61,6 +62,7 @@ class MatchResult:
     requirements: JobRequirements | None = None
     sections: dict[str, bool] = field(default_factory=dict)
     recommendations: list[Recommendation] = field(default_factory=list)
+    quality: QualityScore | None = None
 
 
 def _pct(value: float) -> float:
@@ -131,19 +133,20 @@ def analyse(resume_text: str, job_text: str) -> MatchResult:
     )
 
     # --- 5. Structure and advice -------------------------------------------
-    sections = detect_sections(resume_text)
+    features = extract_features(resume_text)
+    sections = features.sections
     recommendations = build_recommendations(
-        resume_text=resume_text,
+        features=features,
         missing_skills=[s.name for s in sorted(missing)],
         matched_skills=[s.name for s in sorted(matched)],
         keywords=[(k.term, k.found) for k in keywords],
-        sections=sections,
         text_similarity=_pct(similarity),
         keyword_match=_pct(keyword_ratio),
     )
 
     return MatchResult(
         requirements=requirements,
+        quality=score_resume(resume_text),
         overall_score=_pct(overall),
         text_similarity=_pct(similarity),
         semantic_similarity=_pct(semantic) if semantic is not None else None,

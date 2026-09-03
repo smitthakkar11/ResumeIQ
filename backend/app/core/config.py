@@ -65,6 +65,25 @@ class Settings(BaseSettings):
     # entirely; 1 would treat Kubernetes as if it were Docker.
     PARTIAL_SKILL_CREDIT: float = 0.5
 
+    # --- Resume quality score weights (need not sum to 1; they are rescaled) ---
+    QUALITY_WEIGHT_SKILLS: float = 0.25
+    QUALITY_WEIGHT_KEYWORDS: float = 0.15
+    QUALITY_WEIGHT_PROJECTS: float = 0.20
+    QUALITY_WEIGHT_EXPERIENCE: float = 0.20
+    QUALITY_WEIGHT_EDUCATION: float = 0.10
+    QUALITY_WEIGHT_FORMATTING: float = 0.10
+
+    @property
+    def quality_weights(self) -> dict[str, float]:
+        return {
+            "skills": self.QUALITY_WEIGHT_SKILLS,
+            "keywords": self.QUALITY_WEIGHT_KEYWORDS,
+            "projects": self.QUALITY_WEIGHT_PROJECTS,
+            "experience": self.QUALITY_WEIGHT_EXPERIENCE,
+            "education": self.QUALITY_WEIGHT_EDUCATION,
+            "formatting": self.QUALITY_WEIGHT_FORMATTING,
+        }
+
     # Phase 9, optional. Reported alongside TF-IDF similarity, never folded into
     # the overall score: that would make the score unexplainable and would
     # silently shift it relative to saved history.

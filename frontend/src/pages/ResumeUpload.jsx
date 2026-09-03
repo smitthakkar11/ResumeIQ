@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { QualityScore } from '@/components/QualityScore'
 import { SkillBadges } from '@/components/SkillBadges'
 import { Alert, Button, SectionHead } from '@/components/ui'
 import { errorMessage, resumeApi } from '@/lib/api'
@@ -12,6 +13,7 @@ export function ResumeUpload() {
   const [error, setError] = useState('')
   const [preview, setPreview] = useState(null)
   const [skills, setSkills] = useState(null)
+  const [quality, setQuality] = useState(null)
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef(null)
 
@@ -26,6 +28,7 @@ export function ResumeUpload() {
   useEffect(() => {
     if (!preview) {
       setSkills(null)
+      setQuality(null)
       return
     }
     let cancelled = false
@@ -33,6 +36,10 @@ export function ResumeUpload() {
       .skills(preview.id)
       .then((s) => !cancelled && setSkills(s))
       .catch(() => !cancelled && setSkills(null))
+    resumeApi
+      .quality(preview.id)
+      .then((q) => !cancelled && setQuality(q))
+      .catch(() => !cancelled && setQuality(null))
     return () => {
       cancelled = true
     }
@@ -162,6 +169,14 @@ export function ResumeUpload() {
 
       {preview && (
         <div className="space-y-10">
+          {quality && (
+            <QualityScore
+              overall={quality.overall}
+              components={quality.components}
+              weights={quality.weights}
+            />
+          )}
+
           {skills && (
             <section>
               <SectionHead right={<span className="num text-xs text-ink-400">{skills.total}</span>}>

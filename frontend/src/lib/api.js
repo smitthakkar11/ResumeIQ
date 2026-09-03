@@ -107,6 +107,14 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  */
 
 /**
+ * @typedef {Object} QualityComponent
+ * @property {string} key
+ * @property {string} label
+ * @property {number} score
+ * @property {{label: string, earned: number, maximum: number, detail: string}[]} checks
+ */
+
+/**
  * @typedef {Object} JobRequirements
  * @property {string} role
  * @property {ExtractedSkill[]} required_skills
@@ -124,6 +132,8 @@ export function errorMessage(error, fallback = 'Something went wrong') {
  * @property {string}  job_title
  * @property {string}  resume_filename
  * @property {number}  match_score       0-100
+ * @property {number|null} resume_quality_score  0-100, independent of the job
+ * @property {QualityComponent[]} quality_breakdown
  * @property {number}  text_similarity   0-100
  * @property {number|null} semantic_similarity  0-100; null when the optional
  *                                              embedding model is unavailable
@@ -189,6 +199,7 @@ export const resumeApi = {
   list: () => api.get('/resumes').then((r) => r.data),
   get: (id) => api.get(`/resumes/${id}`).then((r) => r.data),
   skills: (id) => api.get(`/resumes/${id}/skills`).then((r) => r.data),
+  quality: (id) => api.get(`/resumes/${id}/quality`).then((r) => r.data),
   remove: (id) => api.delete(`/resumes/${id}`).then(() => undefined),
 }
 

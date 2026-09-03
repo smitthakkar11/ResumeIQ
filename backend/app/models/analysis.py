@@ -43,6 +43,11 @@ class Analysis(Base, TimestampMixin):
     skill_match: Mapped[float | None] = mapped_column(Float, nullable=True)
     keyword_match: Mapped[float] = mapped_column(Float, nullable=False)
 
+    # Resume quality, independent of this job. Stored so history can show how
+    # the resume itself improved across versions.
+    resume_quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    quality_breakdown: Mapped[list[Any]] = mapped_column(JSON, nullable=False, default=list)
+
     # JSON rather than three more tables: we only ever read these back whole to
     # render one page, never query into them. Normalise what you query,
     # serialise what you only display.

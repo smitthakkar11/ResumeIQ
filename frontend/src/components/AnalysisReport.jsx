@@ -1,6 +1,7 @@
 import { ComponentBars } from '@/components/ComponentBars'
 import { JobIntelligence } from '@/components/JobIntelligence'
 import { PartialSkills } from '@/components/PartialSkills'
+import { QualityScore } from '@/components/QualityScore'
 import { Recommendations } from '@/components/Recommendations'
 import { ScoreMeter } from '@/components/ScoreMeter'
 import { SectionChecklist } from '@/components/SectionChecklist'
@@ -108,6 +109,17 @@ export function AnalysisReport({ result, divider = false }) {
           ))}
         </div>
       </section>
+
+      {result.resume_quality_score !== null &&
+        result.quality_breakdown?.length > 0 && (
+          <section className="mt-12">
+            <SectionHead>Your resume on its own</SectionHead>
+            <QualityScore
+              overall={result.resume_quality_score}
+              components={result.quality_breakdown}
+            />
+          </section>
+        )}
 
       {result.requirements && (
         <section className="mt-12">

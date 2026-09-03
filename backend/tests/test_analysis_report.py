@@ -1,6 +1,7 @@
 """Phase 6: section detection and rule-based recommendations."""
 
 from app.services.analysis.recommendations import build_recommendations
+from app.services.analysis.resume_features import extract_features
 from app.services.analysis.sections import detect_sections
 
 RESUME = """SMIT THAKKAR
@@ -76,13 +77,16 @@ class TestSectionDetection:
 
 
 class TestRecommendations:
-    def _build(self, **overrides):
+    def _build(self, resume_text: str = RESUME, sections: dict | None = None, **overrides):
+        features = extract_features(resume_text)
+        if sections is not None:
+            features.sections = sections
+
         defaults = dict(
-            resume_text=RESUME,
+            features=features,
             missing_skills=[],
             matched_skills=["Python"],
             keywords=[("python", True)],
-            sections=detect_sections(RESUME),
             text_similarity=80.0,
             keyword_match=80.0,
         )
@@ -142,10 +146,27 @@ class TestRecommendations:
         """Same input, same advice — the reason this is rules and not an LLM."""
         assert [t.message for t in self._build()] == [t.message for t in self._build()]
 
-    def test_a_perfect_resume_gets_no_criticism(self) -> None:
-        text = (
-            RESUME
-            + "\nReduced page load time by 40% for 5000 monthly users. " * 20
-        )
+    def test_a_strong_resume_gets_no_criticism(self) -> None:
+        """A resume that satisfies every rule should draw only praise."""
+        text = """SMIT THAKKAR
+smit@example.com | +91 98765 43210 | github.com/smitthakkar11 | linkedin.com/in/smitt
+
+TECHNICAL SKILLS
+Python, React, MySQL, Docker, FastAPI
+
+EXPERIENCE
+Software Engineering Intern, Jan 2025 - Jun 2025
+- Built a reporting service in Python that cut manual effort by 6 hours weekly
+- Deployed the stack with Docker, reducing environment setup to 10 minutes
+- Designed a MySQL schema supporting 5000 monthly records
+
+PROJECTS
+- Developed a resume analyser with FastAPI, improving screening speed by 40%
+- Implemented a React dashboard used by 200 students each term
+
+EDUCATION
+B.Tech Computer Science, 2022 - 2026
+""" + ("Delivered additional internal tooling and documentation for the team. " * 12)
+
         tips = self._build(resume_text=text, missing_skills=[])
-        assert categories(tips) <= {"positive"}
+        assert categories(tips) <= {"positive"}, [t.message for t in tips]

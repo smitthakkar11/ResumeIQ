@@ -221,3 +221,68 @@ class TestResumeSkillsEndpoint:
             headers={"Authorization": f"Bearer {other}"},
         )
         assert response.status_code == 404
+
+
+@requires_db
+class TestResumeQualityEndpoint:
+    """Phase B: resume quality, independent of any job description."""
+
+    def _upload(self, client: TestClient, headers: dict) -> int:
+        return client.post(
+            "/api/resumes/upload",
+            headers=headers,
+            files={"file": ("r.pdf", make_pdf(), "application/pdf")},
+        ).json()["id"]
+
+    def test_returns_an_explainable_breakdown(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = self._upload(client, auth_headers)
+        body = client.get(f"/api/resumes/{resume_id}/quality", headers=auth_headers).json()
+
+        assert 0 <= body["overall"] <= 100
+        assert [c["key"] for c in body["components"]] == [
+            "skills", "keywords", "projects", "experience", "education", "formatting"
+        ]
+        # Every component must justify its score.
+        for component in body["components"]:
+            assert component["checks"]
+            assert all(check["detail"] for check in component["checks"])
+
+    def test_another_user_gets_404(self, client: TestClient, auth_headers: dict) -> None:
+        resume_id = self._upload(client, auth_headers)
+        other = client.post(
+            "/api/auth/signup",
+            json={"name": "Other", "email": "otherq@example.com", "password": "a-good-password"},
+        ).json()["access_token"]
+
+        response = client.get(
+            f"/api/resumes/{resume_id}/quality",
+            headers={"Authorization": f"Bearer {other}"},
+        )
+        assert response.status_code == 404
+
+    def test_requires_authentication(self, client: TestClient, auth_headers: dict) -> None:
+        resume_id = self._upload(client, auth_headers)
+        assert client.get(f"/api/resumes/{resume_id}/quality").status_code == 401
+
+    def test_analysis_also_carries_the_quality_score(
+        self, client: TestClient, auth_headers: dict
+    ) -> None:
+        resume_id = self._upload(client, auth_headers)
+        created = client.post(
+            "/api/analyses",
+            headers=auth_headers,
+            json={
+                "resume_id": resume_id,
+                "job_title": "Engineer",
+                "job_description": "Requirements: Python, React and MySQL for our platform team.",
+            },
+        ).json()
+
+        assert created["resume_quality_score"] is not None
+        assert len(created["quality_breakdown"]) == 6
+
+        # ...and it survives a reload, because it is stored not recomputed.
+        fetched = client.get(f"/api/analyses/{created['id']}", headers=auth_headers).json()
+        assert fetched["resume_quality_score"] == created["resume_quality_score"]
